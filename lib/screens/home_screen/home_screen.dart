@@ -1,8 +1,11 @@
 import 'package:ecommerce_ui/API/Api_Service.dart';
 import 'package:ecommerce_ui/Akun/Akun_screen.dart';
 import 'package:ecommerce_ui/models/model_barang.dart';
+import 'package:ecommerce_ui/models/model_favorit.dart';
 import 'package:ecommerce_ui/screens/favorite/favorite_screen.dart';
 import 'package:ecommerce_ui/navBar/navBar.dart';
+import 'package:ecommerce_ui/screens/home_screen/components/favorit.dart';
+
 import 'package:ecommerce_ui/screens/home_screen/components/productsr.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -25,12 +28,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreen extends State<HomeScreen> {
   int _currentIndex = 0;
 
-  List<Productse> favorites = [];
+  List<GetDataFav> favorites = [];
 
   List<Widget> _fragments = [
-    const FragmentBeranda(),
+FragmentBeranda(),
     const FragmentProduk(),
-    FavoriteScreen(favorites: [],),
+    FavoriteScreens(favorites: [],),
     const FragmentAkun(),
   ];
 
@@ -45,6 +48,14 @@ class _HomeScreen extends State<HomeScreen> {
           setState(() {
             _currentIndex = index;
           });
+          if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => FavoriteScreens(favorites: favorites),
+              ),
+            );
+          }
         },
         items: const [
           BottomNavigationBarItem(
@@ -69,52 +80,113 @@ class _HomeScreen extends State<HomeScreen> {
     );
   }
 }
-class FragmentBeranda extends StatelessWidget {
-  const FragmentBeranda({Key? key}) : super(key: key);
-  PreferredSizeWidget appBar(BuildContext context) {
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(1), // Sesuaikan dengan ketinggian yang diinginkan
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 52, 12, 0),
-        child: Row(
-          children: [
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => NavBar(),
-                  ),
-                );
-              },
-              icon: const Icon(
-                FontAwesomeIcons.barsStaggered,
-              ),
-            ),
-            const Spacer(),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                FontAwesomeIcons.solidBell,
-              ),
-            ),
-            const SizedBox(width: 12),
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const CheckoutScreen(),
-                  ),
-                );
-              },
-              icon: const Icon(
-                FontAwesomeIcons.cartShopping,
-              ),
-            ),
-          ],
+class FragmentBeranda extends StatefulWidget {
+ FragmentBeranda({Key? key}) : super(key: key);
+@override
+  _FragmentBerandaState createState() => _FragmentBerandaState();
+}
+
+class _FragmentBerandaState extends State<FragmentBeranda> {
+   List<Productse> data = []; // Variabel untuk menyimpan data produk
+  List<Productse> searchResults = []; // State untuk menampung hasil pencarian
+   bool isSearching = false; 
+TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+ void fetchData() async {
+    List<Productse> products = await ServiceApiBarang().getData();
+    setState(() {
+      data = products;
+    });
+  }
+  @override
+void dispose() {
+  searchController.dispose();
+  super.dispose();
+}
+
+
+void searchProducts(String keyword) {
+  if (keyword.isEmpty) {
+    setState(() {
+      searchResults = [];
+      isSearching = false;
+    });
+  } else {
+    List<Productse> results = data.where((product) {
+      return product.merkBarang!.toLowerCase().contains(keyword.toLowerCase());
+    }).toList();
+
+    results.sort((a, b) {
+      int differenceA = (a.merkBarang!.toLowerCase().length - keyword.length).abs();
+      int differenceB = (b.merkBarang!.toLowerCase().length - keyword.length).abs();
+
+      return differenceA.compareTo(differenceB);
+    });
+
+    setState(() {
+      searchResults = results;
+      isSearching = true;
+    });
+  }
+}
+
+
+
+
+
+
+PreferredSizeWidget appBar(BuildContext context) {
+  return PreferredSize(
+    preferredSize: const Size.fromHeight(56), // Sesuaikan dengan ketinggian yang diinginkan
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(12, 52, 12, 0),
+      child: Row(
+        children: [
+     GestureDetector(
+  onTap: () {
+    // Tindakan yang dijalankan saat gambar di-tap
+  },
+  child: Image.asset(
+    'assets/images/sittoklogo.png',
+    width: 44,  // Sesuaikan ukuran gambar
+    height: 44,
+  ),
+),
+
+        const SizedBox(width: 8),
+
+const Text(
+        'Selamat Datang di Sittok',
+        style: TextStyle(
+          fontSize: 21,
+          fontWeight: FontWeight.bold,
         ),
       ),
-    );
-  }
+         const Spacer(),
+
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const CheckoutScreen(),
+                ),
+              );
+            },
+            icon: const Icon(
+              FontAwesomeIcons.cartShopping,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
   Widget title() {
     return const Padding(
       padding: EdgeInsets.only(left: 24, right: 100),
@@ -127,34 +199,67 @@ class FragmentBeranda extends StatelessWidget {
       ),
     );
   }
-  Widget searchBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: SizedBox(
-        height: 48,
-        child: TextField(
-          textAlignVertical: TextAlignVertical.bottom,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30),
-              borderSide: const BorderSide(
-                color: kSecondaryColor,
-              ),
+Widget searchBar() {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 24),
+    child: SizedBox(
+      height: 48,
+      child: TextField(
+        controller: searchController,
+        textAlignVertical: TextAlignVertical.bottom,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: const BorderSide(
+              color: kSecondaryColor,
             ),
-            fillColor: Colors.white,
-            hintText: 'Cari Produk Yang Anda Inginkan',
-            prefixIcon: const Icon(FontAwesomeIcons.magnifyingGlass),
           ),
+          fillColor: Colors.white,
+          hintText: 'Cari Produk Yang Anda Inginkan',
+          prefixIcon: const Icon(FontAwesomeIcons.search),
         ),
+        onChanged: searchProducts,
       ),
-    );
+    ),
+  );
+}
+
+  Widget gass(){
+    return   FutureBuilder<List<Productse>>(
+        future: ServiceApiBarang().getData(),
+        builder: (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: Text('No data available.'),
+            );
+          } else {
+            List<Productse> data = snapshot.data!;
+            return Expanded(
+  child: isSearching && searchResults.isNotEmpty
+      ? Products(
+          title: 'Hasil Pencarian',
+          data: searchResults,
+        )
+      : Products(
+          title: 'Produk',
+          data: data,
+        ),
+);
+
+          }
+        },
+      );
   }
-  @override
+@override
   Widget build(BuildContext context) {
     return Scaffold(
-    appBar: appBar(context),
+      appBar: appBar(context),
       body: Padding(
-        padding: const EdgeInsets.only(top: 84),
+        padding: const EdgeInsets.only(top: 10),
         child: ShaderMask(
           shaderCallback: (bounds) {
             return const LinearGradient(
@@ -168,59 +273,25 @@ class FragmentBeranda extends StatelessWidget {
               stops: [0.0, 0.05, 1.0],
             ).createShader(bounds);
           },
-          child: ListView(
-            padding: const EdgeInsets.only(top: 24),
+          child: Column(
             children: [
-              title(),
               const SizedBox(height: 24),
               searchBar(),
               const SizedBox(height: 24),
               Categories(),
               const SizedBox(height: 24),
-              FragmentP(),
-              // FutureBuilder<List<Productse>>(
-              //   future: ServiceApiBarang().getData(),
-              //   builder: (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
-              //     if (snapshot.connectionState == ConnectionState.waiting) {
-              //       return Center(
-              //         child: CircularProgressIndicator(),
-              //       );
-              //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              //       return Center(
-              //         child: Text('No data available.'),
-              //       );
-              //     } else {
-              //       List<Productse> data = snapshot.data!;
-              //       return Productsr(
-              //         title: 'Populer',
-              //         data: data,
-              //       );
-              //     }
-              //   },
-              // ),
-              const SizedBox(height: 24),
+             Expanded(
+  child: isSearching && searchResults.isNotEmpty
+      ? Products(
+          title: 'Hasil Pencarian',
+          data: searchResults,
+        )
+      : Products(
+          title: 'Produk',
+          data: data,
+        ),
+),
 
-              FutureBuilder<List<Productse>>(
-                future: ServiceApiBarang().getData(),
-                builder: (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(
-                      child: Text('No data available.'),
-                    );
-                  } else {
-                    List<Productse> data = snapshot.data!;
-                    return Productsr(
-                      title: 'Produk Baru',
-                      data: data,
-                    );
-                  }
-                },
-              ),
-              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -235,9 +306,9 @@ class FragmentP extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
+     
       body: FutureBuilder<List<Productse>>(
-
+        
         future: ServiceApiBarang().getData(),
         builder: (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -251,7 +322,7 @@ class FragmentP extends StatelessWidget {
           } else {
             List<Productse> data = snapshot.data!;
             return Productsr(
-
+              
               title: 'Produk',
               data: data,
             );
@@ -268,7 +339,7 @@ class FragmentProduk extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
+     
       body: FutureBuilder<List<Productse>>(
         future: ServiceApiBarang().getData(),
         builder: (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
@@ -294,19 +365,34 @@ class FragmentProduk extends StatelessWidget {
 }
 
 
-class FavoriteScreen extends StatelessWidget {
-  final List<Productse> favorites;
+class FavoriteScreens extends StatelessWidget {
+  final List<GetDataFav> favorites;
 
-  const FavoriteScreen({Key? key, required this.favorites}) : super(key: key);
+  const FavoriteScreens({Key? key, required this.favorites}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Favorit'),
-      ),
-      body: Center(
-        child: Text('Favorite Count: ${favorites.length}'),
+     
+      body: FutureBuilder<List<GetDataFav>>(
+        future: ServiceApiFavorit().getData(),
+        builder: (BuildContext context, AsyncSnapshot<List<GetDataFav>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: Text('No data available.'),
+            );
+          } else {
+            List<GetDataFav> data = snapshot.data!;
+            return ProductF(
+              title: 'Produk',
+              data: data,
+            );
+          }
+        },
       ),
     );
   }

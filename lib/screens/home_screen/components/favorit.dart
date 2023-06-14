@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:ecommerce_ui/SessionManager.dart';
 import 'package:ecommerce_ui/models/model_barang.dart';
 import 'package:ecommerce_ui/models/model_datakeranjang.dart';
+import 'package:ecommerce_ui/models/model_favorit.dart';
 import 'package:ecommerce_ui/models/model_user.dart';
 import 'package:ecommerce_ui/screens/checkout_screen/checkout_screen.dart';
 import 'package:ecommerce_ui/screens/favorite/favorite_screen.dart';
@@ -19,36 +20,37 @@ import '../../../API/Api_connect.dart';
 import '../../details_screen/details_screen.dart';
 
 
-class Products extends StatefulWidget {
- final String title;
-  final List<Productse> data;
+class ProductF extends StatefulWidget {
+  final String title;
+  final List<GetDataFav> data;
 
-  Products({
+
+  ProductF({
     Key? key,
     required this.title,
     required this.data,
+
   }) : super(key: key);
 
   @override
   _ProductsState createState() => _ProductsState();
 }
 
-class _ProductsState extends State<Products> {
-  late Future<List<Productse>> listblog;
+class _ProductsState extends State<ProductF> {
+  late Future<List<GetDataFav>> listblog;
  late Map<int, bool> isLiked = {};
- 
 
 
 
-  List<Productse> listViews = [];
+  List<GetDataFav> listViews = [];
 
-Future<List<Productse>> fetchData() async {
+  Future<List<GetDataFav>> fetchData() async {
+
     try {
-      List<Productse> data = await ServiceApiBarang().getData();
+      List<GetDataFav> data = await ServiceApiFavorit().getData();
       setState(() {
         listViews = data;
-        isLiked = Map<int, bool>.fromIterable(data,
-            key: (e) => e.idBarang, value: (e) => e.isLiked);
+       isLiked = Map<int, bool>.fromIterable(data, key: (e) => e.idBarang, value: (e) => e.isLiked);
       });
       return data;
     } catch (error) {
@@ -58,7 +60,6 @@ Future<List<Productse>> fetchData() async {
     }
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -66,7 +67,7 @@ Future<List<Productse>> fetchData() async {
 
   }
 
-  Widget background(Productse product) {
+  Widget background(GetDataFav product) {
     return Container(
       height: 140,
       decoration: BoxDecoration(
@@ -83,7 +84,7 @@ Future<List<Productse>> fetchData() async {
     );
   }
 
-  Widget text(Productse product) {
+  Widget text(GetDataFav product) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
@@ -128,7 +129,7 @@ Future<List<Productse>> fetchData() async {
     );
   }
 
-  Widget image(Productse product) {
+  Widget image(GetDataFav product) {
     if (product.gambar != null) {
       String imageUrl =
           "https://2637-114-5-104-99.ngrok-free.app/" + product.gambar.toString();
@@ -237,7 +238,7 @@ Widget favoriteIcon(int index) {
 
 
 
-  Widget productItem(BuildContext context, Productse product, int index) {
+  Widget productItem(BuildContext context, GetDataFav product, int index) {
     String imageUrl =
         "https://b387-202-67-46-229.ngrok-free.app/" + product.gambar.toString();
     return Stack(
@@ -316,40 +317,42 @@ Widget favoriteIcon(int index) {
   }
 
 
- @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: FutureBuilder<List<Productse>>(
-      future: listblog,
-      builder: (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
-        } else {
-          List<Productse> data = snapshot.data!;
-          return GridView.builder(
-            padding: EdgeInsets.all(16),
-            itemCount: data.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 100,
-            ),
-            itemBuilder: (BuildContext context, index) {
-              return productItem(context, data[index], index);
-            },
-          );
-        }
-      },
-    ),
-  );
-}
-
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: FutureBuilder<List<GetDataFav>>(
+        future: listblog,
+        builder: (BuildContext context, AsyncSnapshot<List<GetDataFav>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else {
+            List<GetDataFav> data = snapshot.data!;
+            return GridView.builder(
+              padding: EdgeInsets.all(16),
+              itemCount: data.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 100,
+              ),
+              itemBuilder: (BuildContext context, index) {
+                return productItem(context, data[index], index);
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
 
   late SessionManager _sessionManager;
   
@@ -442,47 +445,45 @@ Future<void> _handleAdddatafavorit(BuildContext context, int index) async {
 
 
 Future<void> _handledeleteData(BuildContext context, int index) async {
-    _sessionManager = SessionManager();
+  _sessionManager = SessionManager();
 
-    SessionManager.getIdCustomer().then((idCustomer) {
-      var idCustomerString = idCustomer?.toString() ?? '';
+  SessionManager.getIdCustomer().then((idCustomer) {
+    var idCustomerString = idCustomer?.toString() ?? '';
 
-
-
-      http.post(Uri.parse(ApiConnect.del_datafavorit), body: {
-        "id_customer": idCustomerString,
-        "id_barang": listViews[index].idBarang.toString(),
-      }).then((response) {
+    http.post(Uri.parse(ApiConnect.del_datafavorit), body: {
+      "id_customer": idCustomerString,
+      "id_barang": listViews[index].idBarang.toString(),
+    }).then((response) {
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        final add_datafavorit = AddChart.fromJson(jsonData);
         if (response.statusCode == 200) {
-          final jsonData = jsonDecode(response.body);
-          final add_datafavorit = AddChart.fromJson(jsonData);
-          if (response.statusCode == 200) {
-            // Set status favorit menjadi true jika berhasil
-        setState(() {
-  isLiked[index] = true;
-});
-
-       
-          } else {
-            Fluttertoast.showToast(
-              msg: "Data Gagal masuk Keranjang",
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 12,
-            );
-          }
+          // Set status favorit menjadi true jika berhasil
+          setState(() {
+            isLiked[index] = true;
+            listViews.removeAt(index); // Hapus item dari listViews
+          });
         } else {
           Fluttertoast.showToast(
-            msg: idCustomerString,
+            msg: "Data Gagal masuk Keranjang",
             backgroundColor: Colors.red,
             textColor: Colors.white,
             fontSize: 12,
           );
         }
-      }).catchError((error) {
-        // Handle error
-        print('Error: $error');
-      });
+      } else {
+        Fluttertoast.showToast(
+          msg: idCustomerString,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 12,
+        );
+      }
+    }).catchError((error) {
+      // Handle error
+      print('Error: $error');
     });
-  }
+  });
+}
+
 }

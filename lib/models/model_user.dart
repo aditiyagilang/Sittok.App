@@ -34,9 +34,6 @@ class Users {
   }
 
 
-  static Future<int?> getIdCustomer() async {
-    Users? userData = await SessionManager.getUserData();
-    return userData?.idCustomer;
-  }
+
 
 }

@@ -13,7 +13,10 @@ class ApiConnect {
         static const addQty = "$connectApi/updateDataKeranjang";
          static const minQty = "$connectApi/updateQty";
          static const total = "$connectApi/getTotalKeranjang";
-
+       static const paymen = "$connectApi/getAllPaymen";
+        static const jual = "$connectApi/storeJual";
+         static const detiljual = "$connectApi/storeDetil";
+         static const statusjual = "$connectApi/updateStatusKeranjang";
 
 
 }

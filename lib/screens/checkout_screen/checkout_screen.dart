@@ -1,7 +1,10 @@
 import 'package:ecommerce_ui/API/Api_Service.dart';
 import 'package:ecommerce_ui/API/Api_connect.dart';
 import 'package:ecommerce_ui/BuyScreen/BuyPage.dart';
+import 'package:ecommerce_ui/SessionManager.dart';
+import 'package:ecommerce_ui/models/Total.dart';
 import 'package:ecommerce_ui/models/getdataKeranjang.dart';
+import 'package:ecommerce_ui/screens/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -20,13 +23,18 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   late Future<List<GetKeranjang>> listKeranjang;
-  
+
   List<GetKeranjang> listViews = [];
+  late Total _total;
+      
 
   Future<List<GetKeranjang>> fetchData() async {
     try {
       List<GetKeranjang> data = await ServiceApiKeranjang().getData();
-       listViews = data;
+      Total total = await TotalService().getTotalJumlah();
+     
+      _total = total; // Assign the fetched Total object to _total
+      listViews = data;
       return data;
     } catch (error) {
       // Handle error jika terjadi kesalahan saat mengambil data dari API
@@ -49,7 +57,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         children: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomeScreen(),
+              ),
+            );
             },
             icon: const Icon(
               FontAwesomeIcons.chevronLeft,
@@ -68,15 +81,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget text(GetKeranjang product, int index) {
-     String jumlah = product.jumlah.toString();
-     fetchData();
+    String jumlah = product.jumlah.toString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-         product.merkBarang!,
-          
+          product.merkBarang!,
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
@@ -84,14 +95,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ),
         const SizedBox(height: 4),
         Text(
-      "Harga : " +  "Rp."+  product.harga.toString(),
+          "Harga : " + "Rp." + product.harga.toString(),
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
           ),
-        ), const SizedBox(height: 4),
+        ),
+        const SizedBox(height: 4),
         Text(
-       "Jumlah : " +  "Rp."+  listViews[index].jumlah.toString() ,
+          "Jumlah : " + "Rp." + listViews[index].jumlah.toString(),
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
@@ -100,7 +112,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ],
     );
   }
-
+  
 Widget amountButton(GetKeranjang product, int index) {
   String qty = product.qty.toString();
   return Container(
@@ -117,8 +129,15 @@ Widget amountButton(GetKeranjang product, int index) {
           onPressed: () {
             _handleMinQty(context, index);
             fetchData();
+            getTotalJumlahs();
+             setState(() {
+        total.jumlah = total.jumlah; 
+      });
             setState(() {
               listViews[index].jumlah;
+               setState(() {
+        total.jumlah = total.jumlah; 
+      });
             });
              
           },
@@ -140,9 +159,16 @@ Widget amountButton(GetKeranjang product, int index) {
           
           onPressed: () {
             _handleAddQty(context, index);
+            getTotalJumlahs();
             fetchData(); // Panggil fetchData() setelah operasi selesai
+             setState(() {
+        total.jumlah = total.jumlah; 
+      });
          setState(() {
               listViews[index].jumlah;
+               setState(() {
+        total.jumlah = total.jumlah; 
+      });
             });
           },
           icon: const Icon(
@@ -258,7 +284,7 @@ Widget costLine(String title, String text, {double fontSize = 16}) {
   );
 }
 
-Widget cost(List<GetKeranjang> products) {
+Widget cost(List<GetKeranjang> products, Total total) {
   final totalJumlah = products.fold<double>(
     0,
     (value, product) => value + (product.jumlah ?? 0),
@@ -278,13 +304,14 @@ Widget cost(List<GetKeranjang> products) {
         ),
         costLine(
           'Total',
-          'Rp.' + totalJumlah.toString(),
+          'Rp.' + total.jumlah.toString(),
           fontSize: 18,
         ),
       ],
     ),
   );
 }
+
 
 
 
@@ -301,6 +328,7 @@ Widget checkoutButton(BuildContext context) {
       ),
       child: InkWell(
         onTap: () {
+          getTotalJumlahs();
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => BuyPage()),
@@ -321,6 +349,7 @@ Widget checkoutButton(BuildContext context) {
   );
 }
 @override
+
 Widget build(BuildContext context) {
   return Scaffold(
     body: FutureBuilder<List<GetKeranjang>>(
@@ -334,11 +363,12 @@ Widget build(BuildContext context) {
           return const Center(child: Text('Data not found'));
         } else {
           List<GetKeranjang> products = snapshot.data!;
+          Total total = _total; // Use the fetched Total object here
 
           return Stack(
             children: [
               cartItems(products),
-              cost(products),
+              cost(products, total), // Pass the Total object here
               checkoutButton(context),
               appBar(context),
             ],
@@ -348,6 +378,7 @@ Widget build(BuildContext context) {
     ),
   );
 }
+
 Future<void> _handleAddQty(BuildContext context, int index) async {
   try {
     var response = await http.post(Uri.parse(ApiConnect.addQty), body: {
@@ -415,8 +446,52 @@ Future<void> _handleMinQty(BuildContext context, int index) async {
     print('Error: $e');
   }
 }
+late SessionManager _sessionManager;
+late Total total;
 
 
+
+void getTotalJumlahs() async {
+_sessionManager = SessionManager();
+total = Total();
+  try {
+    var idCustomer = await SessionManager.getIdCustomer();
+    var idCustomerString = idCustomer?.toString() ?? '';
+    final response = await http.post(Uri.parse(ApiConnect.total), body: {
+      'id_customer': idCustomerString
+    });
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      final jsonData = jsonDecode(response.body);
+      final total = Total.fromJson(jsonData);
+
+      setState(() {
+        total.jumlah = total.jumlah; 
+         setState(() {
+        total.jumlah = total.jumlah; 
+      });
+      });
+
+   
+    } else {
+      Fluttertoast.showToast(
+        msg: "Gagal mendapatkan total jumlah",
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 12,
+      );
+    }
+  } catch (e) {
+    print(e.toString());
+    Fluttertoast.showToast(
+      msg: "Gagal mendapatkan total jumlah",
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 12,
+    );
+  }
+}
 
 
 }

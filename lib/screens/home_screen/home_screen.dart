@@ -1,12 +1,15 @@
 import 'package:ecommerce_ui/API/Api_Service.dart';
 import 'package:ecommerce_ui/Akun/Akun_screen.dart';
+import 'package:ecommerce_ui/models/GetTransaksi_model.dart';
 import 'package:ecommerce_ui/models/model_barang.dart';
 import 'package:ecommerce_ui/models/model_favorit.dart';
 import 'package:ecommerce_ui/screens/favorite/favorite_screen.dart';
 import 'package:ecommerce_ui/navBar/navBar.dart';
+import 'package:ecommerce_ui/screens/home_screen/components/coba.dart';
 import 'package:ecommerce_ui/screens/home_screen/components/favorit.dart';
 
 import 'package:ecommerce_ui/screens/home_screen/components/productsr.dart';
+import 'package:ecommerce_ui/screens/home_screen/components/tracking.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ecommerce_ui/models/product.dart';
@@ -340,9 +343,9 @@ class FragmentProduk extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
      
-      body: FutureBuilder<List<Productse>>(
-        future: ServiceApiBarang().getData(),
-        builder: (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
+      body: FutureBuilder<List<GetTransaksi>>(
+        future: ServiceApiGetTrans().getData(),
+        builder: (BuildContext context, AsyncSnapshot<List<GetTransaksi>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(),
@@ -352,9 +355,11 @@ class FragmentProduk extends StatelessWidget {
               child: Text('No data available.'),
             );
           } else {
-            List<Productse> data = snapshot.data!;
-            return Products(
-              title: 'Produk',
+            List<GetTransaksi> data = snapshot.data!;
+            int index = 0;
+            return TrackingScreens
+            (
+              title: 'Riwayat',
               data: data,
             );
           }

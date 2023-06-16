@@ -1,11 +1,13 @@
 import 'package:ecommerce_ui/API/Api_Service.dart';
 import 'package:ecommerce_ui/API/Api_connect.dart';
+import 'package:ecommerce_ui/SessionManager.dart';
 import 'package:ecommerce_ui/constants.dart';
 import 'package:ecommerce_ui/models/Total.dart';
 import 'package:ecommerce_ui/models/UpdateStatusKeranjang_model.dart';
 import 'package:ecommerce_ui/models/add_transaksi.dart';
 import 'package:ecommerce_ui/models/detil_transaksi.dart';
 import 'package:ecommerce_ui/models/getdataKeranjang.dart';
+import 'package:ecommerce_ui/screens/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -165,8 +167,61 @@ child: Column(
              const SizedBox(height: 15,),
              InkWell(
               onTap: () {
-                _handleJual(context);
-                 showDialog(context: context,
+                verifyjual();
+              
+              },
+              child:  Container(
+              alignment: Alignment.center,
+              height: 50,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Color(0xFF4C53A5),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                "Check Out",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+             )
+
+  ],
+),
+)
+);
+    });
+  },
+  child:
+            Container(
+              alignment: Alignment.center,
+              height: 50,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Color(0xFF4C53A5),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                "Check Out",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+
+        )],
+        ),
+      ),
+    );
+  }
+
+ Future<void> pop(BuildContext context) async {
+  await  showDialog(context: context,
                   builder: (context) {
                     return Dialog(
                       child:  Container(
@@ -353,73 +408,55 @@ Spacer(),
 )
 );
     });
-              },
-              child:  Container(
-              alignment: Alignment.center,
-              height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color(0xFF4C53A5),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                "Check Out",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-             )
-
-  ],
-),
-)
-);
-    });
-  },
-  child:
-            Container(
-              alignment: Alignment.center,
-              height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color(0xFF4C53A5),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                "Check Out",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-
-        )],
-        ),
-      ),
-    );
   }
-
+  void verifyjual() {
+    if (nama_lengkap.text.isEmpty) {
+      Fluttertoast.showToast(
+        msg: "Nama Harus Diisi",
+        backgroundColor: Colors.red[300],
+        fontSize: 12,
+      );
+    } else if (alamat.text.isEmpty) {
+      Fluttertoast.showToast(
+          msg: "Alamat Harus Diisi",
+          backgroundColor: Colors.red[300],
+          fontSize: 12);
+    }else if (nohp.text.isEmpty) {
+      Fluttertoast.showToast(
+          msg: "Nomor Harus Diisi",
+          backgroundColor: Colors.red[300],
+          fontSize: 12);
+    } else {
+      _handleJual(context);
+    }
+  }
+  late SessionManager _sessionManager;
 Future<void> _handleJual(BuildContext context) async {
+   _sessionManager = SessionManager();
+
+    SessionManager.getIdCustomer().then((idCustomer) {
+      var idCustomerString = idCustomer?.toString() ?? '';
+
+
+  
     try {
-      var response = await http.post(Uri.parse(ApiConnect.jual), body: {
+      
+      http.post(Uri.parse(ApiConnect.jual), body: {
         "total": total?.jumlah.toString(),
         "total_final": total?.jumlah.toString(),
         "alamat": alamat.text.toString(),
         "nohp": nohp.text.toString(),
         "nama_lengkap" :nama_lengkap.text.toString(),
+        "id_customer": idCustomerString,
         "bukti_bayar" :"image/no_money.png",
-      });
+      }).then((response) {
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         final jual = AddTransaksi.fromJson(jsonData);
         if (response.statusCode == 200) {
          transaksi = jual;
+         pop(context);
         } else {
           Fluttertoast.showToast(
             msg: "Gagal Melakukan Pembelian",
@@ -436,12 +473,13 @@ Future<void> _handleJual(BuildContext context) async {
           fontSize: 12,
         );
       }
-    } catch (e) {
+    } );}catch (e) {
       // Handle error
       print('Error: $e');
     }
-  }
+  });}
 Future<void> _handleDetil(BuildContext context) async {
+  
   try {
     for (int index = 0; index < listViews.length; index++) {
       var response = await http.post(Uri.parse(ApiConnect.detiljual), body: {
@@ -450,6 +488,8 @@ Future<void> _handleDetil(BuildContext context) async {
         "jumlah": total?.jumlah.toString(),
         "harga": listViews[index].harga.toString(),
         "qty": listViews[index].qty.toString(),
+         "total_final": total!.jumlah.toString(),
+          "id_barang": listViews[index].idBarang.toString(),
       });
 
       if (response.statusCode == 200) {
@@ -495,7 +535,19 @@ Future<void> _handlestatus(BuildContext context) async {
         final jsonData = jsonDecode(response.body);
         final detjuals = UpdateStatusKeranjang.fromJson(jsonData);
         if (response.statusCode == 200) {
+           Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>HomeScreen(),
+              ),
+            );
           setState(() {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>FragmentProduk(),
+              ),
+            );
            Fluttertoast.showToast(
             msg: "Ayo Belanja Lagi",
             backgroundColor: Color(0xFF4C53A5),
@@ -524,6 +576,15 @@ Future<void> _handlestatus(BuildContext context) async {
     // Handle error
     print('Error: $e');
   }
+}
+
+
+Widget bayar(){
+  return Scaffold(
+    body: Column(children: [
+
+    ],),
+  );
 }
 
 }

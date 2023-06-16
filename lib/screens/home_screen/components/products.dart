@@ -85,14 +85,15 @@ Future<List<Productse>> fetchData() async {
 
   Widget text(Productse product) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const SizedBox(height: 220,),
           Row(
             children: [
               if (product.merkBarang != null && product.merkBarang!.isNotEmpty)
-                Text("\n \n \n"+
+                Text(
                     product.merkBarang.toString(),
                   style: const TextStyle(
                     fontSize: 10,
@@ -102,8 +103,7 @@ Future<List<Productse>> fetchData() async {
               const Spacer(),
               if (product.harga != null)
                 Text(
-                  "\n \n \n"+
-
+            
                       product.harga.toString(),
                   style: const TextStyle(
                     fontSize: 10,
@@ -131,10 +131,10 @@ Future<List<Productse>> fetchData() async {
   Widget image(Productse product) {
     if (product.gambar != null) {
       String imageUrl =
-          "https://2637-114-5-104-99.ngrok-free.app/" + product.gambar.toString();
+          "https://67f2-202-67-40-235.ngrok-free.app/" + product.gambar.toString();
       return Container(
-        height: 148,
-        width: 148,
+        height: 128,
+        width: 128,
         color: Colors.grey,
 
         decoration: BoxDecoration(
@@ -153,7 +153,7 @@ Future<List<Productse>> fetchData() async {
             image: DecorationImage(
                 fit: BoxFit.cover,
                 image: NetworkImage(
-                  "https://b387-202-67-46-229.ngrok-free.app/" + product.gambar.toString(),
+                  "https://67f2-202-67-40-235.ngrok-free.app/" + product.gambar.toString(),
                 ))),
         child: text(product),
       );
@@ -169,14 +169,14 @@ Widget favoriteIcon(int index) {
   int? productId = listViews[index].idBarang;
   bool isProductLiked = isLiked[productId] ?? false;
   return Positioned(
-    top: 20,
+    top: 0,
     right: 0,
     child: 
     
     listViews[index].isLiked! == true ?
     Container(
-      width: 48,
-      height: 48,
+      width: 38,
+      height: 38,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(12),
@@ -239,7 +239,7 @@ Widget favoriteIcon(int index) {
 
   Widget productItem(BuildContext context, Productse product, int index) {
     String imageUrl =
-        "https://b387-202-67-46-229.ngrok-free.app/" + product.gambar.toString();
+        "https://67f2-202-67-40-235.ngrok-free.app/" + product.gambar.toString();
     return Stack(
 
       children: [
@@ -249,16 +249,16 @@ Widget favoriteIcon(int index) {
               color: Colors.white,
               child:Column(
                   children :[
-                  // InkWell(
-                  // onTap: () {
-                  //   Navigator.of(context).push(
-                  //   MaterialPageRoute(
-                  //   builder: (_) => DetailsScreen(product: product),
-                  //   ));
-                  //   }),
+                  InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                    MaterialPageRoute(
+                    builder: (_) => CheckoutScreen(),
+                    ));
+                    }, child :
                     Image.network(
                       imageUrl,
-                      height: 148,
+                      height: 110,
                       fit: BoxFit.cover,
 
                       loadingBuilder: (context, child, loadingProgress) {
@@ -269,21 +269,22 @@ Widget favoriteIcon(int index) {
                         },
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          height: 148,
+                          height: 128,
                           color: Colors.grey,
                         );
                       },
-                    ),
+                    ),),
                     const SizedBox(height: 5,),
-                    text(product)
+                 
                   ]),)
         ),
         Align(
           alignment: Alignment.bottomCenter,
-          child: ClipRRect(
+          child: 
+              ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: SizedBox(
-              width: 184,
+              width: 148,
               height: 48,
               child: ElevatedButton(
                 onPressed: () {
@@ -305,9 +306,24 @@ Widget favoriteIcon(int index) {
               ),
             ),
           ),
+          //  IconButton(
+          //   onPressed: () {
+          //   //   Navigator.push(
+          //   //   context,
+          //   //   MaterialPageRoute(
+          //   //     builder: (context) => BuyPage(),
+          //   //   ),
+          //   // );
+          //   },
+          //   icon: const Icon(
+              
+          //     FontAwesomeIcons.ellipsis,
+          //   ),
+          // ),
+        
         ),
         favoriteIcon(index),
-
+   text(product)
       ],
     );
 
@@ -338,7 +354,7 @@ Widget build(BuildContext context) {
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 16,
-              mainAxisSpacing: 100,
+              mainAxisSpacing: 10,
             ),
             itemBuilder: (BuildContext context, index) {
               return productItem(context, data[index], index);

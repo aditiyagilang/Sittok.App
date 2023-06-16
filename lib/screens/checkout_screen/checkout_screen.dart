@@ -39,7 +39,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     } catch (error) {
       // Handle error jika terjadi kesalahan saat mengambil data dari API
       print('Error fetching data: $error');
-      throw Exception('Failed to load data');
+      throw Exception('Belum Ada Barang');
     }
   }
 
@@ -205,7 +205,7 @@ Widget amountButton(GetKeranjang product, int index) {
 }
 
 Widget item(BuildContext context, GetKeranjang product, int index) {
-   String imagePath = "https://b387-202-67-46-229.ngrok-free.app/" + product.gambar.toString();
+   String imagePath = "https://67f2-202-67-40-235.ngrok-free.app/" + product.gambar.toString();
 
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -358,9 +358,9 @@ Widget build(BuildContext context) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return const Center(child: Text('Error fetching data'));
+          return const Center(child: Text('Belum Ada Barang'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('Data not found'));
+          return const Center(child: Text('Belum Ada Barang'));
         } else {
           List<GetKeranjang> products = snapshot.data!;
           Total total = _total; // Use the fetched Total object here

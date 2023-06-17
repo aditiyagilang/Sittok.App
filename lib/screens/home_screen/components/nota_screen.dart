@@ -208,7 +208,7 @@ void initState() {
             Row(children : [
 
  Image.network(
-      "https://67f2-202-67-40-235.ngrok-free.app/" + listGetDetail[index].gambar!.toString(),
+      "https://fd01-202-154-18-72.ngrok-free.app/" + listGetDetail[index].gambar!.toString(),
       height: 80,
       width: 80,
       errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
@@ -232,9 +232,12 @@ const SizedBox(width: 10,),
             ),
              textAlign: TextAlign.start,
           ),
-          
+          Container(
+            width: 150,
+            child :
           Text(
            listGetDetail[index].deskripsi.toString() ,
+           maxLines: 4,
             style:const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -242,7 +245,7 @@ const SizedBox(width: 10,),
             ),
              textAlign: TextAlign.start,
           ),
-          ]),
+            )]),
           const Spacer()
           ]),
           const Spacer(),
@@ -360,7 +363,7 @@ setState(() {
  _showImageDialog(image);
 });
      
-      update();
+   
  
   }
 }
@@ -496,12 +499,13 @@ Future<void> _showImageDialog(File? image) async {
       return Dialog(
         child: Container(
           padding: EdgeInsets.all(10),
+   
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-            if (image != null)
+            
   Image.file(
-    image,
+    image!,
     width: 200,
     height: 200,
     fit: BoxFit.cover,
@@ -511,21 +515,52 @@ Future<void> _showImageDialog(File? image) async {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Cancel'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (image != null) {
-                        update();
-                      }
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Kirim'),
-                  ),
+                  Container(
+      height: 34,
+      width: 100,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(36),
+        color: Color(0xFF4C53A5)
+      ),
+      child: InkWell(
+        onTap: () {
+       Navigator.pop(context);
+        },
+        child: const Center(
+          child: Text(
+           "Cancel",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+               color: kBackgroundColor,
+            ),
+          ),
+        ),
+      ),
+    ),
+               Container(
+      height: 34,
+      width: 80,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(36),
+        color: Color(0xFF4C53A5)
+      ),
+      child: InkWell(
+        onTap: () {
+      update();
+        },
+        child: const Center(
+          child: Text(
+           "Kirim",
+            style:  TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+               color: kBackgroundColor,
+            ),
+          ),
+        ),
+      ),
+    ),
                 ],
               ),
             ],
@@ -539,7 +574,7 @@ Future<void> _showImageDialog(File? image) async {
 
 Future<void> update() async {
   if (image == null) {
-    // Gambar belum dipilih, tampilkan pesan kesalahan atau peringatan
+   
     Fluttertoast.showToast(
       msg: "Pilih gambar terlebih dahulu",
       backgroundColor: Colors.red,
@@ -565,6 +600,10 @@ Future<void> update() async {
         textColor: Colors.white,
         fontSize: 12,
       );
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
     } else {
       // Gagal mengunggah gambar
       print("Image Not Uploaded");

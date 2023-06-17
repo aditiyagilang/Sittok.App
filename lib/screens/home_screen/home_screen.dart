@@ -278,10 +278,8 @@ Widget searchBar() {
           },
           child: Column(
             children: [
-              const SizedBox(height: 24),
-              searchBar(),
-              const SizedBox(height: 24),
-              Categories(),
+           
+              
               const SizedBox(height: 24),
              Expanded(
   child: isSearching && searchResults.isNotEmpty

@@ -2,12 +2,14 @@
 
 import 'package:ecommerce_ui/Help/HelpCenter.dart';
 import 'package:ecommerce_ui/Screen/Login/login_screen.dart';
+import 'package:ecommerce_ui/SessionManager.dart';
 import 'package:flutter/material.dart';
 
 import 'AkunMenu.dart';
 import 'Akun_pic.dart';
 
 class AkunBody extends StatelessWidget {
+  late SessionManager _sessionManager;
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -31,6 +33,7 @@ class AkunBody extends StatelessWidget {
             text: "Log Out",
             icon: "assets/icons/Log out.svg",
             press: () {
+              SessionManager.clearSession();
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => LoginScreen()),

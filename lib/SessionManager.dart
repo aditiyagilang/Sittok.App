@@ -7,12 +7,14 @@ class SessionManager {
   static const String KEY_USER_DATA = 'user_data';
   static const String KEY_LOGGED_IN = 'logged_in';
   static const String KEY_ID_CUSTOMER = 'id_customer';
+    static const String KEY_GAMBAR = 'profil';
 
   static Future<void> saveUserData(Users user) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(KEY_USER_DATA, user.toJson().toString());
     await prefs.setBool(KEY_LOGGED_IN, true);
     await prefs.setInt(KEY_ID_CUSTOMER, user.idCustomer ?? 0);
+    await prefs.setString(KEY_GAMBAR, user.profil.toString() );
   }
 
   static Future<Users?> getUserData() async {
@@ -30,6 +32,10 @@ class SessionManager {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getInt(KEY_ID_CUSTOMER);
   }
+    static Future<String?> getProfil() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(KEY_GAMBAR);
+  }
 
   static Future<bool> isLoggedIn() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -41,5 +47,6 @@ class SessionManager {
     await prefs.remove(KEY_USER_DATA);
     await prefs.remove(KEY_LOGGED_IN);
     await prefs.remove(KEY_ID_CUSTOMER);
+    await prefs.remove(KEY_GAMBAR);
   }
 }

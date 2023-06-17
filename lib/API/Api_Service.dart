@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:ecommerce_ui/API/Api_connect.dart';
 import 'package:ecommerce_ui/SessionManager.dart';
+import 'package:ecommerce_ui/models/GetKategori.dart';
 import 'package:ecommerce_ui/models/GetTransaksi_model.dart';
 import 'package:ecommerce_ui/models/Total.dart';
 import 'package:ecommerce_ui/models/getdataKeranjang.dart';
@@ -122,8 +123,6 @@ class ServiceApiKeranjang {
   }
 }
 class ServiceApiPaymen {
-  
-
   Future<List<Paymen>> getData() async {
 
     try {
@@ -144,6 +143,29 @@ class ServiceApiPaymen {
     }
   }
 }
+
+class ServiceApiKategori {
+  Future<List<Kategori>> getData() async {
+
+    try {
+
+      final response = await http.post(Uri.parse(ApiConnect.kategori));
+      if (response.statusCode == 200) {
+        print(response.body);
+        List<dynamic> jsonData = jsonDecode(response.body);
+        List<Kategori> data =
+            jsonData.map((e) => Kategori.fromJson(e)).toList();
+        return data;
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      print(e.toString());
+      throw Exception('Failed to load data');
+    }
+  }
+}
+
 class ServiceApiGetTrans {
   late SessionManager _sessionManager;
 

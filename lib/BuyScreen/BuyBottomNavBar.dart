@@ -3,6 +3,7 @@ import 'package:ecommerce_ui/API/Api_connect.dart';
 import 'package:ecommerce_ui/SessionManager.dart';
 import 'package:ecommerce_ui/constants.dart';
 import 'package:ecommerce_ui/models/Total.dart';
+import 'package:ecommerce_ui/models/Triger.dart';
 import 'package:ecommerce_ui/models/UpdateStatusKeranjang_model.dart';
 import 'package:ecommerce_ui/models/add_transaksi.dart';
 import 'package:ecommerce_ui/models/detil_transaksi.dart';
@@ -383,6 +384,7 @@ Spacer(),
              InkWell(
               onTap: () {
                 _handleDetil(context);
+               
               },
               child:  Container(
               alignment: Alignment.center,
@@ -497,6 +499,7 @@ Future<void> _handleDetil(BuildContext context) async {
         final detjuals = AdddetilTransaksi.fromJson(jsonData);
         if (response.statusCode == 200) {
           _handlestatus(context);
+           _handlebarang();
           setState(() {
             detjual = detjuals;
           });
@@ -535,6 +538,7 @@ Future<void> _handlestatus(BuildContext context) async {
         final jsonData = jsonDecode(response.body);
         final detjuals = UpdateStatusKeranjang.fromJson(jsonData);
         if (response.statusCode == 200) {
+           _handlebarang();
            Navigator.push(
               context,
               MaterialPageRoute(
@@ -578,13 +582,41 @@ Future<void> _handlestatus(BuildContext context) async {
   }
 }
 
+Future<void> _handlebarang() async {
+  try {
+    for (int index = 0; index < listViews.length; index++) {
+      var response = await http.post(Uri.parse(ApiConnect.triger), body: {
+        "id_barang": listViews[index].idBarang.toString(),
+        "qty": listViews[index].qty
+      });
 
-Widget bayar(){
-  return Scaffold(
-    body: Column(children: [
-
-    ],),
-  );
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        final detjuals = Triger.fromJson(jsonData);
+        if (response.statusCode == 200) {
+          
+        } else {
+          Fluttertoast.showToast(
+            msg: "Gagal Melakukan Pembelian",
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 12,
+          );
+        }
+      } else {
+        Fluttertoast.showToast(
+          msg: "Coba Beberapa Saat Lagi",
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 12,
+        );
+      }
+    }
+  } catch (e) {
+    // Handle error
+    print('Error: $e');
+  }
 }
+
 
 }

@@ -132,7 +132,7 @@ class _ProductsState extends State<ProductF> {
   Widget image(GetDataFav product) {
     if (product.gambar != null) {
       String imageUrl =
-          "https://67f2-202-67-40-235.ngrok-free.app/" + product.gambar.toString();
+          "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar.toString();
       return Container(
         height: 148,
         width: 148,
@@ -154,7 +154,7 @@ class _ProductsState extends State<ProductF> {
             image: DecorationImage(
                 fit: BoxFit.cover,
                 image: NetworkImage(
-                  "https://67f2-202-67-40-235.ngrok-free.app/" + product.gambar.toString(),
+                  "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar.toString(),
                 ))),
         child: text(product),
       );
@@ -240,7 +240,7 @@ Widget favoriteIcon(int index) {
 
   Widget productItem(BuildContext context, GetDataFav product, int index) {
     String imageUrl =
-        "https://67f2-202-67-40-235.ngrok-free.app/" + product.gambar.toString();
+        "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar.toString();
     return Stack(
 
       children: [

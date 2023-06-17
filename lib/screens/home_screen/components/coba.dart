@@ -61,8 +61,13 @@ void initState() {
 
 
 
-  Widget appBar(BuildContext context) {
-    return Positioned(
+ PreferredSizeWidget appBar(BuildContext context) {
+  return PreferredSize(
+    preferredSize: const Size.fromHeight(56), // Sesuaikan dengan ketinggian yang diinginkan
+
+    child:
+    Padding (padding: EdgeInsets.only(top: 20),child :
+     Positioned(
       left: 12,
       top: 52,
       child: Row(
@@ -89,7 +94,7 @@ void initState() {
           ),
         ],
       ),
-    );
+    )));
   }
 Widget amountButton(GetTransaksi product, int index) {
   return InkWell(
@@ -158,7 +163,7 @@ void _handleNota(String idJual) async {
 
   Widget image(GetKeranjang product) {
     String imagePath =
-        "https://2637-114-5-104-99.ngrok-free.app/" + product.gambar!;
+        "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar!;
 
     return Positioned(
       left: 16,
@@ -272,9 +277,9 @@ Widget item(BuildContext context, GetTransaksi product, int index) {
 
 Widget cartItems(List<GetTransaksi> products) {
   return Padding(
-    padding: const EdgeInsets.only(bottom: 256),
+    padding: const EdgeInsets.only(bottom:6),
     child: ListView.separated(
-      padding: const EdgeInsets.only(top: 120),
+      padding: const EdgeInsets.only(top: 10),
       separatorBuilder: (_, __) => const SizedBox(height: 24),
       itemCount: products.length,
       itemBuilder: (context, index) => item(context, products[index], index),
@@ -286,6 +291,7 @@ Widget cartItems(List<GetTransaksi> products) {
 @override
 Widget build(BuildContext context) {
   return Scaffold(
+    appBar: appBar(context),
     body: FutureBuilder<List<GetTransaksi>>(
       future: listKeranjang,
       builder: (context, snapshot) {
@@ -300,12 +306,12 @@ Widget build(BuildContext context) {
           Jual jual = Jual(); // Inisialisasi objek Jual
           Barang barang = Barang(); // Inisialisasi objek Barang
 
-          return Stack(
-            children: [
-              cartItems(products),
-              appBar(context),
-            ],
-          );
+          return 
+
+            cartItems(products);
+       
+              
+          
         }
       },
     ),

@@ -185,7 +185,7 @@ Widget amountButton(GetKeranjang product, int index) {
 
 
  Widget image(GetKeranjang product) {
-  String imagePath = "https://2637-114-5-104-99.ngrok-free.app/" + product.gambar!;
+  String imagePath = "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar!;
 
   return Positioned(
     left: 16,
@@ -205,7 +205,7 @@ Widget amountButton(GetKeranjang product, int index) {
 }
 
 Widget item(BuildContext context, GetKeranjang product, int index) {
-   String imagePath = "https://67f2-202-67-40-235.ngrok-free.app/" + product.gambar.toString();
+   String imagePath = "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar.toString();
 
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 10),

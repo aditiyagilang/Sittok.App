@@ -1,11 +1,14 @@
 import 'dart:convert';
 
 import 'package:ecommerce_ui/SessionManager.dart';
+import 'package:ecommerce_ui/models/GetDetilBarang.dart';
+import 'package:ecommerce_ui/models/GetKategori.dart';
 import 'package:ecommerce_ui/models/model_barang.dart';
 import 'package:ecommerce_ui/models/model_datakeranjang.dart';
 import 'package:ecommerce_ui/models/model_user.dart';
 import 'package:ecommerce_ui/screens/checkout_screen/checkout_screen.dart';
 import 'package:ecommerce_ui/screens/favorite/favorite_screen.dart';
+import 'package:ecommerce_ui/screens/home_screen/components/detail_barang.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -35,18 +38,23 @@ class Products extends StatefulWidget {
 
 class _ProductsState extends State<Products> {
   late Future<List<Productse>> listblog;
+    late Future<List<Kategori>> listkategori;
  late Map<int, bool> isLiked = {};
- 
+
 
 
 
   List<Productse> listViews = [];
+  List<Kategori> _list = [];
+  List<Productse> originalListViews = [];
 
 Future<List<Productse>> fetchData() async {
     try {
       List<Productse> data = await ServiceApiBarang().getData();
+      List<Kategori> kategori = await ServiceApiKategori().getData();
       setState(() {
         listViews = data;
+        originalListViews = List.from(data); // Salin data ke originalListViews
         isLiked = Map<int, bool>.fromIterable(data,
             key: (e) => e.idBarang, value: (e) => e.isLiked);
       });
@@ -57,14 +65,64 @@ Future<List<Productse>> fetchData() async {
       throw Exception('Failed to load data');
     }
   }
-
+Future<List<Kategori>> fetchData2() async {
+    try {
+    
+      List<Kategori> kategori = await ServiceApiKategori().getData();
+      setState(() {
+        _list = kategori;
+       
+      });
+      return kategori;
+    } catch (error) {
+      // Handle error jika terjadi kesalahan saat mengambil data dari API
+      print('Error fetching data: $error');
+      throw Exception('Failed to load data');
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     listblog = fetchData();
+  listkategori = fetchData2();
+
 
   }
+void updateList(String value) {
+  setState(() {
+    if (value.isEmpty) {
+      // Kembalikan data asli jika value kosong
+      listViews = widget.data.toList();
+    } else {
+      // Cari data yang cocok dengan value
+      listViews = widget.data
+          .where((element) =>
+              element.merkBarang!.toLowerCase().contains(value.toLowerCase()) ||
+              element.deskripsi!.toLowerCase().contains(value.toLowerCase()) ||
+              element.idKategori!.toString().toLowerCase().contains(value.toLowerCase()) ||
+              element.harga!.toString().contains(value))
+          .toList();
+
+      // Menghitung jumlah kemunculan kata kunci dalam setiap elemen data
+      listViews.sort((a, b) {
+        int countA = (a.merkBarang!.toLowerCase().split(value.toLowerCase()).length - 1) +
+            (a.deskripsi!.toLowerCase().split(value.toLowerCase()).length - 1);
+        int countB = (b.merkBarang!.toLowerCase().split(value.toLowerCase()).length - 1) +
+            (b.deskripsi!.toLowerCase().split(value.toLowerCase()).length - 1);
+        return countB.compareTo(countA);
+      });
+    }
+
+    if (listViews.isEmpty) {
+      // Set listViews menjadi kosong jika hasil pencarian tidak ditemukan
+      listViews = [];
+    }
+  });
+}
+
+
+
 
   Widget background(Productse product) {
     return Container(
@@ -89,7 +147,7 @@ Future<List<Productse>> fetchData() async {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 220,),
+
           Row(
             children: [
               if (product.merkBarang != null && product.merkBarang!.isNotEmpty)
@@ -131,7 +189,7 @@ Future<List<Productse>> fetchData() async {
   Widget image(Productse product) {
     if (product.gambar != null) {
       String imageUrl =
-          "https://67f2-202-67-40-235.ngrok-free.app/" + product.gambar.toString();
+          "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar.toString();
       return Container(
         height: 128,
         width: 128,
@@ -153,7 +211,7 @@ Future<List<Productse>> fetchData() async {
             image: DecorationImage(
                 fit: BoxFit.cover,
                 image: NetworkImage(
-                  "https://67f2-202-67-40-235.ngrok-free.app/" + product.gambar.toString(),
+                  "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar.toString(),
                 ))),
         child: text(product),
       );
@@ -201,8 +259,8 @@ Widget favoriteIcon(int index) {
       ),
     ) :
     Container(
-      width: 48,
-      height: 48,
+      width: 38,
+      height: 38,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(12),
@@ -237,132 +295,147 @@ Widget favoriteIcon(int index) {
 
 
 
-  Widget productItem(BuildContext context, Productse product, int index) {
-    String imageUrl =
-        "https://67f2-202-67-40-235.ngrok-free.app/" + product.gambar.toString();
-    return Stack(
-
-      children: [
-        Positioned.fill(
-            child: Container(
-
-              color: Colors.white,
-              child:Column(
-                  children :[
-                  InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                    MaterialPageRoute(
-                    builder: (_) => CheckoutScreen(),
-                    ));
-                    }, child :
-                    Image.network(
-                      imageUrl,
-                      height: 110,
-                      fit: BoxFit.cover,
-
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                        },
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          height: 128,
-                          color: Colors.grey,
-                        );
-                      },
-                    ),),
-                    const SizedBox(height: 5,),
-                 
-                  ]),)
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: 
-              ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: SizedBox(
-              width: 148,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: () {
-                  _handleAdddatakeranjang(context, index);
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: kPrimaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+Widget productItem(BuildContext context, Productse product, int index) {
+  String imageUrl =
+      "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar.toString();
+  return Stack(
+    children: [
+  
+         InkWell(
+            onTap: () {
+              String idBarang = widget.data[index].idBarang.toString();
+              _handleBarang(idBarang);
+            },
+            child: Image.network(
+              imageUrl,
+              height: 125,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: 128,
+                  color: Colors.grey,
+                );
+              },
+            ),
+          ),
+    
+      Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding (padding: EdgeInsets.only(top: 77), child :
+        
+        ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: SizedBox(
+            
+            width: 148,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: () {
+                _handleAdddatakeranjang(context, index);
+              },
+              style: ElevatedButton.styleFrom(
+                primary: kPrimaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text(
-                  'Add to Cart',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+              ),
+              child: Text(
+                'Add to Cart',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ),
-          //  IconButton(
-          //   onPressed: () {
-          //   //   Navigator.push(
-          //   //   context,
-          //   //   MaterialPageRoute(
-          //   //     builder: (context) => BuyPage(),
-          //   //   ),
-          //   // );
-          //   },
-          //   icon: const Icon(
-              
-          //     FontAwesomeIcons.ellipsis,
-          //   ),
-          // ),
-        
         ),
-        favoriteIcon(index),
-   text(product)
-      ],
-    );
+      ),),
+      favoriteIcon(index),
+   
+    ],
+  );
+}
 
+int selectedIndex = 0;
+TextEditingController searchController = TextEditingController();
+PreferredSizeWidget appBar(BuildContext context) {
+  return AppBar(
+    toolbarHeight: 56, // Sesuaikan dengan ketinggian yang diinginkan
+    backgroundColor: Colors.white,
+    elevation: 0,
+    title:
+    TextField(
+      onChanged: (value) => updateList(value),
+      textAlignVertical: TextAlignVertical.bottom,
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(
+            color: kSecondaryColor,
+          ),
+        ),
+        fillColor: Colors.white,
+        hintText: 'Cari Produk Yang Anda Inginkan',
+        prefixIcon: const Icon(FontAwesomeIcons.search),
+      ),
+    ),
 
-
-  }
-
+ ); 
+}
 
  @override
 Widget build(BuildContext context) {
   return Scaffold(
-    body: FutureBuilder<List<Productse>>(
-      future: listblog,
-      builder: (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
-        } else {
-          List<Productse> data = snapshot.data!;
-          return GridView.builder(
-            padding: EdgeInsets.all(16),
-            itemCount: data.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 10,
-            ),
-            itemBuilder: (BuildContext context, index) {
-              return productItem(context, data[index], index);
-            },
-          );
-        }
-      },
-    ),
+    appBar: appBar(context),
+    body: 
+  
+
+FutureBuilder<List<Productse>>(
+  future: listblog,
+  builder: (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    } else if (snapshot.hasError) {
+      return Center(
+        child: Text('Error: ${snapshot.error}'),
+      );
+    } else {
+      List<Productse> data = snapshot.data!;
+      
+      if (listViews.isEmpty) {
+        return const Center(
+          child: Text('Tidak ada hasil pencarian.'),
+        );
+      } else {
+        return GridView.builder(
+          padding: const EdgeInsets.only(top: 16, right: 16, left: 16, bottom: 16),
+          itemCount: listViews.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 50,
+          ),
+          itemBuilder: (BuildContext context, index) {
+            return Column(children :[
+            
+            productItem(context, listViews[index], index),
+            const SizedBox(height: 10,),
+            text(listViews[index])]);
+          },
+        );
+      }
+    }
+  },
+),
+
   );
 }
 
@@ -501,4 +574,64 @@ Future<void> _handledeleteData(BuildContext context, int index) async {
       });
     });
   }
+
+  void _handleBarang(String idBarang) async {
+  try {
+    ServiceApiDetilBarang serviceApiNota = ServiceApiDetilBarang(idBarang);
+   GetDetilBarang data = await serviceApiNota.getData();
+
+    // Lakukan tindakan dengan data nota yang diterima, misalnya menavigasi ke halaman nota
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DetilBarang(notaData: data),
+      ),
+    );
+  } catch (error) {
+    // Tangani kesalahan jika terjadi kesalahan saat mengambil data nota
+    print('Error fetching nota data: $error');
+    // Tampilkan pesan kesalahan kepada pengguna
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: const Text('Gagal memuat data nota.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+}
+
+class ServiceApiDetilBarang {
+  final String idBarang;
+
+  ServiceApiDetilBarang(this.idBarang);
+
+Future<GetDetilBarang> getData() async {
+  try {
+    final response = await http.post(Uri.parse(ApiConnect.detilbarang), body: {
+      "id_barang": idBarang,
+    });
+    if (response.statusCode == 200) {
+      print(response.body);
+      dynamic jsonData = jsonDecode(response.body);
+      GetDetilBarang data = GetDetilBarang.fromJson(jsonData);
+      return data;
+    } else {
+      throw Exception('Failed to load data');
+    }
+  } catch (e) {
+    print(e.toString());
+    throw Exception('Failed to load data');
+  }
+}
+
 }

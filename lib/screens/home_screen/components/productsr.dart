@@ -111,7 +111,7 @@ class _ProductsState extends State<Productsr> {
   Widget image(Productse product) {
     if (product.gambar != null) {
       String imageUrl =
-          "https://2637-114-5-104-99.ngrok-free.app/" + product.gambar.toString();
+          "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar.toString();
       return Container(
         height: 148,
         width: 148,
@@ -133,7 +133,7 @@ class _ProductsState extends State<Productsr> {
             image: DecorationImage(
                 fit: BoxFit.cover,
                 image: NetworkImage(
-                  "https://2637-114-5-104-99.ngrok-free.app/" + product.gambar.toString(),
+                  "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar.toString(),
                 ))),
         child: text(product),
       );
@@ -168,7 +168,7 @@ class _ProductsState extends State<Productsr> {
   }
   Widget productItem(BuildContext context, Productse product) {
     String imageUrl =
-        "https://2637-114-5-104-99.ngrok-free.app/" + product.gambar.toString();
+        "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar.toString();
     return Stack(
       children: [
         Positioned.fill(

@@ -14,29 +14,19 @@ class AkunScreen extends StatelessWidget {
       body: ListView(
         children: [
           Container(
-            //t
-            height: 700,
+            height: 600,
             padding: EdgeInsets.only(top: 15),
             decoration: BoxDecoration(
                 color: Colors.purple,
-               // borderRadius: BorderRadius.only(
-                //  topLeft: Radius.circular(35),
-                //  topRight: Radius.circular(35),
-                //)
+
       ),
             child: Column(children: [
               AkunBody(),
-              Container(
-                //decoration: BoxDecoration(
-                //borderRadius: BorderRadius.circular(10),
-                // ),
-              ),
             ]
             ),
           ),
         ],
       ),
-      //bottomNavigationBar: AkunBottomNavBar(),
     );
   }
 }

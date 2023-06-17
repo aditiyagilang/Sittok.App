@@ -12,7 +12,7 @@ class GetNota {
   int? total;
   String? alamat;
   String? nohp;
-  Null? buktiBayar;
+  String? buktiBayar;
   String? status;
   String? namaLengkap;
   int? idCustomer;

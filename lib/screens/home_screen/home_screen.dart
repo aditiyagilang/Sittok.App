@@ -23,7 +23,6 @@ import '../checkout_screen/checkout_screen.dart';
 import 'components/categories.dart';
 import 'components/products.dart';
 
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -37,12 +36,13 @@ class _HomeScreen extends State<HomeScreen> {
   List<GetDataFav> favorites = [];
 
   List<Widget> _fragments = [
-FragmentBeranda(),
+    FragmentBeranda(),
     const FragmentProduk(),
-    FavoriteScreens(favorites: [],),
-FragmentAkun(),
+    FavoriteScreens(
+      favorites: [],
+    ),
+    FragmentAkun(),
   ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,6 @@ FragmentAkun(),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite, color: Colors.purple),
             label: 'Favorit',
-            
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle, color: Colors.purple),
@@ -83,21 +82,21 @@ FragmentAkun(),
           ),
         ],
       ),
-
     );
   }
 }
+
 class FragmentBeranda extends StatefulWidget {
- FragmentBeranda({Key? key}) : super(key: key);
-@override
+  FragmentBeranda({Key? key}) : super(key: key);
+  @override
   _FragmentBerandaState createState() => _FragmentBerandaState();
 }
 
 class _FragmentBerandaState extends State<FragmentBeranda> {
-   List<Productse> data = []; // Variabel untuk menyimpan data produk
+  List<Productse> data = []; // Variabel untuk menyimpan data produk
   List<Productse> searchResults = []; // State untuk menampung hasil pencarian
-   bool isSearching = false; 
-TextEditingController searchController = TextEditingController();
+  bool isSearching = false;
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -105,95 +104,93 @@ TextEditingController searchController = TextEditingController();
     fetchData();
   }
 
- void fetchData() async {
+  void fetchData() async {
     List<Productse> products = await ServiceApiBarang().getData();
     setState(() {
       data = products;
     });
   }
+
   @override
-void dispose() {
-  searchController.dispose();
-  super.dispose();
-}
-
-
-void searchProducts(String keyword) {
-  if (keyword.isEmpty) {
-    setState(() {
-      searchResults = [];
-      isSearching = false;
-    });
-  } else {
-    List<Productse> results = data.where((product) {
-      return product.merkBarang!.toLowerCase().contains(keyword.toLowerCase());
-    }).toList();
-
-    results.sort((a, b) {
-      int differenceA = (a.merkBarang!.toLowerCase().length - keyword.length).abs();
-      int differenceB = (b.merkBarang!.toLowerCase().length - keyword.length).abs();
-
-      return differenceA.compareTo(differenceB);
-    });
-
-    setState(() {
-      searchResults = results;
-      isSearching = true;
-    });
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
-}
 
+  void searchProducts(String keyword) {
+    if (keyword.isEmpty) {
+      setState(() {
+        searchResults = [];
+        isSearching = false;
+      });
+    } else {
+      List<Productse> results = data.where((product) {
+        return product.merkBarang!
+            .toLowerCase()
+            .contains(keyword.toLowerCase());
+      }).toList();
 
+      results.sort((a, b) {
+        int differenceA =
+            (a.merkBarang!.toLowerCase().length - keyword.length).abs();
+        int differenceB =
+            (b.merkBarang!.toLowerCase().length - keyword.length).abs();
 
+        return differenceA.compareTo(differenceB);
+      });
 
+      setState(() {
+        searchResults = results;
+        isSearching = true;
+      });
+    }
+  }
 
-
-PreferredSizeWidget appBar(BuildContext context) {
-  return PreferredSize(
-    preferredSize: const Size.fromHeight(56), // Sesuaikan dengan ketinggian yang diinginkan
-    child: Padding(
-      padding: const EdgeInsets.fromLTRB(12, 52, 12, 0),
-      child: Row(
-        children: [
-     GestureDetector(
-  onTap: () {
-    // Tindakan yang dijalankan saat gambar di-tap
-  },
-  child: Image.asset(
-    'assets/images/sittoklogo.png',
-    width: 44,  // Sesuaikan ukuran gambar
-    height: 44,
-  ),
-),
-
-        const SizedBox(width: 8),
-
-const Text(
-        'Selamat Datang di Sittok',
-        style: TextStyle(
-          fontSize: 21,
-          fontWeight: FontWeight.bold,
+  PreferredSizeWidget appBar(BuildContext context) {
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(
+          56), // Sesuaikan dengan ketinggian yang diinginkan
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 52, 12, 0),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                // Tindakan yang dijalankan saat gambar di-tap
+              },
+              child: Image.asset(
+                'assets/images/sittoklogo.png',
+                width: 44, // Sesuaikan ukuran gambar
+                height: 44,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              'Selamat Datang di Sittok',
+              style: TextStyle(
+                fontSize: 21,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Spacer(),
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const CheckoutScreen(),
+                  ),
+                );
+              },
+              icon: const Icon(
+                FontAwesomeIcons.cartShopping,
+              ),
+            ),
+          ],
         ),
       ),
-         const Spacer(),
+    );
+  }
 
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const CheckoutScreen(),
-                ),
-              );
-            },
-            icon: const Icon(
-              FontAwesomeIcons.cartShopping,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
   Widget title() {
     return const Padding(
       padding: EdgeInsets.only(left: 24, right: 100),
@@ -206,62 +203,63 @@ const Text(
       ),
     );
   }
-Widget searchBar() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 24),
-    child: SizedBox(
-      height: 48,
-      child: TextField(
-        controller: searchController,
-        textAlignVertical: TextAlignVertical.bottom,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide: const BorderSide(
-              color: kSecondaryColor,
+
+  Widget searchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: SizedBox(
+        height: 48,
+        child: TextField(
+          controller: searchController,
+          textAlignVertical: TextAlignVertical.bottom,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              borderSide: const BorderSide(
+                color: kSecondaryColor,
+              ),
             ),
+            fillColor: Colors.white,
+            hintText: 'Cari Produk Yang Anda Inginkan',
+            prefixIcon: const Icon(FontAwesomeIcons.search),
           ),
-          fillColor: Colors.white,
-          hintText: 'Cari Produk Yang Anda Inginkan',
-          prefixIcon: const Icon(FontAwesomeIcons.search),
+          onChanged: searchProducts,
         ),
-        onChanged: searchProducts,
       ),
-    ),
-  );
-}
-
-  Widget gass(){
-    return   FutureBuilder<List<Productse>>(
-        future: ServiceApiBarang().getData(),
-        builder: (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-              child: Text('No data available.'),
-            );
-          } else {
-            List<Productse> data = snapshot.data!;
-            return Expanded(
-  child: isSearching && searchResults.isNotEmpty
-      ? Products(
-          title: 'Hasil Pencarian',
-          data: searchResults,
-        )
-      : Products(
-          title: 'Produk',
-          data: data,
-        ),
-);
-
-          }
-        },
-      );
+    );
   }
-@override
+
+  Widget gass() {
+    return FutureBuilder<List<Productse>>(
+      future: ServiceApiBarang().getData(),
+      builder: (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(
+            child: Text('No data available.'),
+          );
+        } else {
+          List<Productse> data = snapshot.data!;
+          return Expanded(
+            child: isSearching && searchResults.isNotEmpty
+                ? Products(
+                    title: 'Hasil Pencarian',
+                    data: searchResults,
+                  )
+                : Products(
+                    title: 'Produk',
+                    data: data,
+                  ),
+          );
+        }
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(context),
@@ -282,21 +280,18 @@ Widget searchBar() {
           },
           child: Column(
             children: [
-           
-              
               const SizedBox(height: 24),
-             Expanded(
-  child: isSearching && searchResults.isNotEmpty
-      ? Products(
-          title: 'Hasil Pencarian',
-          data: searchResults,
-        )
-      : Products(
-          title: 'Produk',
-          data: data,
-        ),
-),
-
+              Expanded(
+                child: isSearching && searchResults.isNotEmpty
+                    ? Products(
+                        title: 'Hasil Pencarian',
+                        data: searchResults,
+                      )
+                    : Products(
+                        title: 'Produk',
+                        data: data,
+                      ),
+              ),
             ],
           ),
         ),
@@ -311,11 +306,10 @@ class FragmentP extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     
       body: FutureBuilder<List<Productse>>(
-        
         future: ServiceApiBarang().getData(),
-        builder: (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
+        builder:
+            (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(),
@@ -327,7 +321,6 @@ class FragmentP extends StatelessWidget {
           } else {
             List<Productse> data = snapshot.data!;
             return Productsr(
-              
               title: 'Produk',
               data: data,
             );
@@ -344,10 +337,10 @@ class FragmentProduk extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     
       body: FutureBuilder<List<GetTransaksi>>(
         future: ServiceApiGetTrans().getData(),
-        builder: (BuildContext context, AsyncSnapshot<List<GetTransaksi>> snapshot) {
+        builder:
+            (BuildContext context, AsyncSnapshot<List<GetTransaksi>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(),
@@ -359,8 +352,7 @@ class FragmentProduk extends StatelessWidget {
           } else {
             List<GetTransaksi> data = snapshot.data!;
             int index = 0;
-            return TrackingScreens
-            (
+            return TrackingScreens(
               title: 'Riwayat',
               data: data,
             );
@@ -371,7 +363,6 @@ class FragmentProduk extends StatelessWidget {
   }
 }
 
-
 class FavoriteScreens extends StatelessWidget {
   final List<GetDataFav> favorites;
 
@@ -380,10 +371,10 @@ class FavoriteScreens extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     
       body: FutureBuilder<List<GetDataFav>>(
         future: ServiceApiFavorit().getData(),
-        builder: (BuildContext context, AsyncSnapshot<List<GetDataFav>> snapshot) {
+        builder:
+            (BuildContext context, AsyncSnapshot<List<GetDataFav>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: CircularProgressIndicator(),
@@ -410,7 +401,8 @@ class FragmentAkun extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: FutureBuilder<Users>(
+    return Scaffold(
+      body: FutureBuilder<Users>(
         future: ServiceApiProfil().getData(),
         builder: (BuildContext context, AsyncSnapshot<Users> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -426,6 +418,7 @@ class FragmentAkun extends StatelessWidget {
             return AkunPic();
           }
         },
-      ),);
+      ),
+    );
   }
 }

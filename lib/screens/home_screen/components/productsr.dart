@@ -275,7 +275,7 @@ class _ProductsState extends State<Productsr> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   'Add to Cart',
                   style: TextStyle(
                     color: Colors.white,
@@ -301,7 +301,7 @@ class _ProductsState extends State<Productsr> {
         future: listblog,
         builder: (BuildContext context, AsyncSnapshot<List<Productse>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasError) {

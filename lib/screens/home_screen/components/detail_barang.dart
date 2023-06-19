@@ -4,6 +4,7 @@ import 'package:ecommerce_ui/constants.dart';
 import 'package:ecommerce_ui/models/GetDetilBarang.dart';
 import 'package:ecommerce_ui/models/model_datakeranjang.dart';
 import 'package:ecommerce_ui/screens/home_screen/components/products.dart';
+import 'package:ecommerce_ui/screens/home_screen/home_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
@@ -133,11 +134,46 @@ Widget favoriteIcon(index) {
   );
 }
 
+ PreferredSizeWidget appBar(BuildContext context) {
+  return PreferredSize(
+    preferredSize: const Size.fromHeight(56), // Sesuaikan dengan ketinggian yang diinginkan
+
+    child:
+    Padding (padding: EdgeInsets.only(top: 20),child :
+     Positioned(
+      left: 12,
+      top: 52,
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.chevron_left,
+            ),
+          ),
+       Text(
+            widget.notaData.merkBarang.toString(),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    )));
+  }
 
   Widget image(GetDetilBarang product) {
     if (product.gambar != null) {
       String imageUrl =
-          "https://fd01-202-154-18-72.ngrok-free.app/" + widget.notaData.gambar.toString();
+          "https://8abd-202-154-18-72.ngrok-free.app/" + widget.notaData.gambar.toString();
       return Container(
         height: 128,
         width: 128,
@@ -159,7 +195,7 @@ Widget favoriteIcon(index) {
             image: DecorationImage(
                 fit: BoxFit.cover,
                 image: NetworkImage(
-                  "https://fd01-202-154-18-72.ngrok-free.app/" + widget.notaData.gambar.toString(),
+                  "https://8abd-202-154-18-72.ngrok-free.app/" + widget.notaData.gambar.toString(),
                 ))),
    
       );
@@ -231,9 +267,10 @@ Widget favoriteIcon(index) {
   Widget build(BuildContext context) {
     int index;
     String imageUrl =
-          "https://fd01-202-154-18-72.ngrok-free.app/" + widget.notaData.gambar.toString();
+          "https://8abd-202-154-18-72.ngrok-free.app/" + widget.notaData.gambar.toString();
     GetDetilBarang product;
     return Scaffold(
+      appBar: appBar(context),
 body: Stack(children: [
    Image.network(
                       imageUrl,

@@ -72,7 +72,7 @@ class _BuyItemSamplesState extends State<BuyItemSamples> {
                     Radio(
                       value: "",
                       groupValue: "",
-                      activeColor: Color(0xFF4C53A5),
+                      activeColor: kSecondaryColor,
                       onChanged: (Index) {},
                     ),
                     Container(
@@ -80,7 +80,7 @@ class _BuyItemSamplesState extends State<BuyItemSamples> {
                       width: 70,
                       margin: EdgeInsets.only(right: 15),
                       child: Image.network(
-                        "https://fd01-202-154-18-72.ngrok-free.app/" +
+                        "https://8abd-202-154-18-72.ngrok-free.app/" +
                             products[index].icon.toString(),
                         errorBuilder: (BuildContext context, Object exception,
                             StackTrace? stackTrace) {
@@ -102,7 +102,7 @@ class _BuyItemSamplesState extends State<BuyItemSamples> {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF4C53A5),
+                              color: Colors.black,
                             ),
                           ),
                           Text(
@@ -110,7 +110,7 @@ class _BuyItemSamplesState extends State<BuyItemSamples> {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 72, 76, 121),
+                              color: Colors.blueGrey,
                             ),
                           ),
                         ],

@@ -97,6 +97,10 @@ void initState() {
     )));
   }
 Widget amountButton(GetTransaksi product, int index) {
+  String status = listViews[index].status.toString();
+  Color buttonColor = status == 'Selesai' ? Colors.white : kSecondaryColor;
+  Color textColor = status == 'Selesai' ? kPrimaryColor : Colors.white;
+
   return InkWell(
     onTap: () {
       String idJual = listViews[index].idJual.toString();
@@ -107,21 +111,22 @@ Widget amountButton(GetTransaksi product, int index) {
       width: 124,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(36),
-        color: kSecondaryColor,
+        color: buttonColor,
       ),
       child: Center(
         child: Text(
-          listViews[index].status.toString(),
-          style: const TextStyle(
+          status,
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: kBackgroundColor,
+            color: textColor,
           ),
         ),
       ),
     ),
   );
 }
+
 
 void _handleNota(String idJual) async {
   try {

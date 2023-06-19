@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:ecommerce_ui/API/Api_connect.dart';
+import 'package:ecommerce_ui/models/GetTransaksi_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:ecommerce_ui/BuyScreen/BuyPage.dart';
 import 'package:ecommerce_ui/constants.dart';
@@ -29,7 +30,7 @@ class _NotaScreenState extends State<NotaScreen> {
 
 
    List<GetNota> listGetDetail = [];
-
+late List<GetTransaksi> data;
 
 Future<List<GetNota>> fetchData(int index) async {
   try {
@@ -71,12 +72,7 @@ void initState() {
       children :[
       IconButton(
             onPressed: () {
-              Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BuyPage(),
-              ),
-            );
+              Navigator.pop(context);
             },
             icon: const Icon(
               FontAwesomeIcons.chevronLeft,
@@ -98,7 +94,7 @@ void initState() {
                   style:  TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
+                    color: Colors.black,
                   ),
                 ),
                  const Spacer(),
@@ -111,7 +107,7 @@ void initState() {
                   style:  const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.normal,
-                    color: Color.fromARGB(175, 76, 83, 165),
+                    color: Colors.blueGrey,
                   ),
                 ),
                  const Spacer(),
@@ -123,7 +119,7 @@ void initState() {
                   style:  const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.normal,
-                   color: Color.fromARGB(175, 76, 83, 165),
+                   color: Colors.blueGrey,
                   ),
                 ),
       ],),
@@ -134,7 +130,7 @@ void initState() {
                   style:  const TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
+                    color: Colors.black,
                   ),
                 ),
                  Text(
@@ -142,7 +138,7 @@ void initState() {
                   style:  const TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.normal,
-                    color: Color.fromARGB(175, 76, 83, 165),
+                    color: Colors.blueGrey,
                   ),
                 ),
                  Text(
@@ -150,7 +146,7 @@ void initState() {
                   style:  const TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.normal,
-                    color: Color.fromARGB(175, 76, 83, 165),
+                    color: Colors.blueGrey
                   ),
                 ),
                 
@@ -208,7 +204,7 @@ void initState() {
             Row(children : [
 
  Image.network(
-      "https://fd01-202-154-18-72.ngrok-free.app/" + listGetDetail[index].gambar!.toString(),
+      "https://8abd-202-154-18-72.ngrok-free.app/" + listGetDetail[index].gambar!.toString(),
       height: 80,
       width: 80,
       errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
@@ -228,7 +224,7 @@ const SizedBox(width: 10,),
             style:const TextStyle(
               fontSize: 19,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF4C53A5),
+              color: Colors.black,
             ),
              textAlign: TextAlign.start,
           ),
@@ -287,7 +283,7 @@ const SizedBox(width: 10,),
                   style:  const TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.normal,
-                   color: Color(0xFF4C53A5),
+                   color: Colors.black,
                   ),
                 ),
       ],),
@@ -296,11 +292,11 @@ Container(
       height: 64,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(36),
-        color: Color(0xFF4C53A5)
+        color: kSecondaryColor
       ),
       child: InkWell(
         onTap: () {
-      _potoBottomSheet();
+      checkstatus();
         },
         child:  Center(
           child: Text(
@@ -367,7 +363,15 @@ setState(() {
  
   }
 }
-
+void checkstatus(){
+  if(widget.notaData[0].status == 'Belum Bayar'){
+    _potoBottomSheet();
+  }else if(widget.notaData[0].status == 'Dikirim'){
+updateKlaim();
+  }else{
+_showImageDialogNot();
+  }
+}
 
   Future _potoBottomSheet() {
     return showModalBottomSheet(
@@ -571,7 +575,71 @@ Future<void> _showImageDialog(File? image) async {
   );
 }
 
+Future<void> _showImageDialogNot() async {
+  String imageUrl = 'https://8abd-202-154-18-72.ngrok-free.app' + widget.notaData[0].buktiBayar.toString();
+ return  showDialog(
+    context: context,
+    builder: (context) {
+      return Dialog(
+        child: Container(
+          padding: EdgeInsets.all(10),
+   
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+            
+Image.network(
+              imageUrl,
+              height: 125,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: 128,
+                  color: Colors.grey,
+                );
+              },
+            ),
 
+              const SizedBox(height: 20),
+                  Container(
+      height: 34,
+      width: 100,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(36),
+        color: kSecondaryColor
+      ),
+      child: InkWell(
+        onTap: () {
+       Navigator.pop(context);
+        },
+        child: const Center(
+          child: Text(
+           "Oke",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+               color: kBackgroundColor,
+            ),
+          ),
+        ),
+      ),
+    ),
+ 
+   
+             
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
 Future<void> update() async {
   if (image == null) {
    
@@ -629,5 +697,51 @@ Future<void> update() async {
   }
 }
 
+Future<void> updateKlaim() async {
+  if (image == null) {
 
-}
+
+  var request = http.MultipartRequest('POST', Uri.parse(ApiConnect.updateKlaim));
+  request.fields['id_jual'] = widget.notaData[0].idJual.toString();
+
+  try {
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      // Gambar berhasil diunggah
+      print("Image Uploaded");
+
+      Fluttertoast.showToast(
+        msg: "Berhasil",
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 12,
+      );
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+    } else {
+      // Gagal mengunggah gambar
+      print("Image Not Uploaded");
+      print(widget.notaData[0].idJual);
+
+      Fluttertoast.showToast(
+        msg: "Coba Beberapa saat Lagi",
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 12,
+      );
+    }
+  } catch (error) {
+    // Terjadi kesalahan saat mengunggah gambar
+    print("Error: $error");
+
+    Fluttertoast.showToast(
+      msg: "Terjadi Kesalahan",
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 12,
+    );
+  }
+
+}}}

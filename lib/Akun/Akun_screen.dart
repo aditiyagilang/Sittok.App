@@ -11,23 +11,14 @@ class AkunScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ListView(
-        children: [
-          Container(
-            height: 600,
-            padding: EdgeInsets.only(top: 15),
-            decoration: BoxDecoration(
-                color: Colors.purple,
-
-      ),
-            child: Column(children: [
-              AkunBody(),
-            ]
-            ),
-          ),
-        ],
-      ),
+      body:  AkunBody(),
+   
     );
+            
+        
+        
+      
+    
   }
 }
 

@@ -12,19 +12,19 @@ class BuyProduct extends StatelessWidget {
             //kembali ke halaman sebelumnya
             Navigator.pop(context);
           },
-          child: Icon(
+          child: const Icon(
             Icons.arrow_back,
             size: 30,
             color: Color(0xFF4C53A5),
           ),
         ),
-        Padding(padding: EdgeInsets.only(left: 20),
+       const Padding(padding: EdgeInsets.only(left: 20),
         child: Text(
           "Pembayaran",
           style: TextStyle(
             fontSize: 23,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF4C53A5),
+            color: Colors.black,
           ),
         ),
         ),

@@ -14,19 +14,19 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class BuyBottomNavBar extends StatefulWidget{
-
+class BuyBottomNavBar extends StatefulWidget {
   @override
   _BuyBottomNavBarState createState() => _BuyBottomNavBarState();
 }
+
 class _BuyBottomNavBarState extends State<BuyBottomNavBar> {
   late Future<List<GetKeranjang>> listKeranjang;
   final TextEditingController alamat = TextEditingController();
   final TextEditingController nohp = TextEditingController();
-    final TextEditingController nama_lengkap = TextEditingController();
+  final TextEditingController nama_lengkap = TextEditingController();
 
-    late AddTransaksi transaksi;
-     late AdddetilTransaksi detjual;
+  late AddTransaksi transaksi;
+  late AdddetilTransaksi detjual;
 
   List<GetKeranjang> listViews = [];
   Total? total;
@@ -34,7 +34,7 @@ class _BuyBottomNavBarState extends State<BuyBottomNavBar> {
     try {
       List<GetKeranjang> data = await ServiceApiKeranjang().getData();
       Total? total = await TotalService().getTotalJumlah();
-     
+
       total = total; // Assign the fetched Total object to _total
       listViews = data;
       return data;
@@ -44,13 +44,12 @@ class _BuyBottomNavBarState extends State<BuyBottomNavBar> {
       throw Exception('Failed to load data');
     }
   }
-     Future<void> fetchData2() async {
+
+  Future<void> fetchData2() async {
     try {
-      
       Total? total = await TotalService().getTotalJumlah();
 
       setState(() {
-        
         this.total = total;
       });
     } catch (error) {
@@ -71,7 +70,6 @@ class _BuyBottomNavBarState extends State<BuyBottomNavBar> {
   Widget build(BuildContext context) {
     List<GetKeranjang> products;
 
-
     return BottomAppBar(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
@@ -79,16 +77,13 @@ class _BuyBottomNavBarState extends State<BuyBottomNavBar> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-
-   
-          
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text(
                   "Total:",
                   style: TextStyle(
-                    color: Color(0xFF4C53A5),
+                    color: Colors.black,
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
@@ -98,319 +93,318 @@ class _BuyBottomNavBarState extends State<BuyBottomNavBar> {
                   style: const TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
+                    color: Colors.black,
                   ),
                 ),
               ],
             ),
-InkWell(
-  onTap: () {
-    showDialog(context: context,
-                  builder: (context) {
-                    return Dialog(
-                      child:  Container(
+            InkWell(
+              onTap: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Dialog(
+                          child: Container(
                         height: 300,
                         padding: EdgeInsets.all(10),
-
-child: Column(
-  children: [
-      const  Text(
-                 "Isi Form Berikut :",
-                  style:  TextStyle(
-                    fontSize: 19,
+                        child: Column(
+                          children: [
+                            const Text(
+                              "Isi Form Berikut :",
+                              style: TextStyle(
+                                fontSize: 19,
+                                fontWeight: FontWeight.bold,
+                                color: kPrimaryColor,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            TextFormField(
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
+                              cursorColor: kPrimaryColor,
+                              controller: nama_lengkap,
+                              decoration: const InputDecoration(
+                                hintText: "Nama Lengkap",
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Icon(Icons.person),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            TextFormField(
+                              textInputAction: TextInputAction.done,
+                              obscureText: false,
+                              cursorColor: kPrimaryColor,
+                              controller: alamat,
+                              decoration: const InputDecoration(
+                                hintText: "Alamat",
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Icon(Icons.home),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            TextFormField(
+                              textInputAction: TextInputAction.done,
+                              obscureText: false,
+                              cursorColor: kPrimaryColor,
+                              controller: nohp,
+                              decoration: const InputDecoration(
+                                hintText: "Nomor Hp",
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Icon(Icons.phone),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            InkWell(
+                              onTap: () {
+                                verifyjual();
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: 50,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: kSecondaryColor,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  "Check Out",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ));
+                    });
+              },
+              child: Container(
+                alignment: Alignment.center,
+                height: 50,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: kSecondaryColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text(
+                  "Check Out",
+                  style: TextStyle(
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
+                    color: Colors.white,
                   ),
                 ),
-                 const SizedBox(height: 5,),
-           TextFormField(
-            keyboardType: TextInputType.emailAddress,
-            textInputAction: TextInputAction.next,
-            cursorColor: kPrimaryColor,
-            controller: nama_lengkap,
-            decoration:  const InputDecoration(
-              hintText: "Nama Lengkap",
-              prefixIcon: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Icon(Icons.person),
               ),
-            ),
-          ),
-          const SizedBox(height: 5,),
-       
-            TextFormField(
-              textInputAction: TextInputAction.done,
-              obscureText: false,
-              cursorColor: kPrimaryColor,
-              controller: alamat,
-              decoration: const InputDecoration(
-                hintText: "Alamat",
-                prefixIcon: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Icon(Icons.lock),
-                ),
-              ),
-            ),
-              const SizedBox(height: 5,),
-             TextFormField(
-              textInputAction: TextInputAction.done,
-              obscureText: false,
-              cursorColor: kPrimaryColor,
-              controller: nohp,
-              decoration: const InputDecoration(
-                hintText: "Nomor Hp",
-                prefixIcon: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Icon(Icons.lock),
-                ),
-              ),
-            ),
-             const SizedBox(height: 15,),
-             InkWell(
-              onTap: () {
-                verifyjual();
-              
-              },
-              child:  Container(
-              alignment: Alignment.center,
-              height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color(0xFF4C53A5),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                "Check Out",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-             )
-
-  ],
-),
-)
-);
-    });
-  },
-  child:
-            Container(
-              alignment: Alignment.center,
-              height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color(0xFF4C53A5),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                "Check Out",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-
-        )],
+            )
+          ],
         ),
       ),
     );
   }
 
- Future<void> pop(BuildContext context) async {
-  await  showDialog(context: context,
-                  builder: (context) {
-                    return Dialog(
-                      child:  Container(
-                        
-                        padding: EdgeInsets.all(10),
-
-child: Column(
-  children: [
-      const  Text(
-                 "Daftar Barang",
-                  style:  TextStyle(
+  Future<void> pop(BuildContext context) async {
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+              child: Container(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: [
+                const Text(
+                  "Daftar Barang",
+                  style: TextStyle(
                     fontSize: 19,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
+                    color: Colors.black,
                   ),
                 ),
-                 const SizedBox(height: 5,),
-              Row(
-                children:const [
-              Text(
-                 "Nama Barang",
-                  style:  TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
-                  ),
+                const SizedBox(
+                  height: 5,
                 ),
-Spacer(),
-              Text(
-                 "Harga",
-                  style:  TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
-                  ),
+                Row(
+                  children: const [
+                    Text(
+                      "Nama Barang",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Spacer(),
+                    Text(
+                      "Harga",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Spacer(),
+                    Text(
+                      "Jumlah",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Spacer(),
+                    Text(
+                      "Total",
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
                 ),
-       Spacer(),
-         Text(
-                 "Jumlah",
-                  style:  TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
-                  ),
+                FutureBuilder<List<GetKeranjang>>(
+                  future: listKeranjang,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return const Center(child: Text('Error fetching data'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text('Data not found'));
+                    } else {
+                      List<GetKeranjang> products = snapshot.data!;
+                      return Column(
+                          children: List.generate(
+                              products.length,
+                              (index) => Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            width: 70,
+                                            child: Text(
+                                              products[index]
+                                                  .merkBarang
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.black,
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          Container(
+                                            width: 60,
+                                            child: Text(
+                                              products[index].harga.toString(),
+                                              style: const TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          Container(
+                                            width: 40,
+                                            child: Text(
+                                              products[index].qty.toString(),
+                                              style: const TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          Text(
+                                            products[index].jumlah.toString(),
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.normal,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                    ],
+                                  )));
+                    }
+                  },
                 ),
-            Spacer(),
-                Text(
-                 "Total",
-                  style:  TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
+                Row(children: [
+                  Spacer(),
+                  const Text(
+                    "Total : ",
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                
-
-              
-                ],
-              ),
-                 FutureBuilder<List<GetKeranjang>>(
-    future: listKeranjang,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return const Center(child: Text('Error fetching data'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('Data not found'));
-        } else {
-          List<GetKeranjang> products = snapshot.data!;
-            return Column(
-            
-            children: 
-            List.generate(
-              
-              products.length,
-              (index) =>  Column(
-            children: [
-         
-
-              Row(
-                children: [
-                Container(
-                  width: 70,
-                  child:
-               Text(
-  products[index].merkBarang.toString(),
-  style: const TextStyle(
-    fontSize: 10,
-    fontWeight: FontWeight.bold,
-    color: Color(0xFF4C53A5),
-  ),
-  maxLines: 2,
-  overflow: TextOverflow.ellipsis,
-),),
-
-                const Spacer(),
-                 Container(
-                  width: 60,
-                  child: Text(
-                 products[index].harga.toString(),
-                  style:  const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
-                  ),
-                ),),
-                const Spacer(),
-                Container(
-                  width: 40,
-                  child:
                   Text(
-                 products[index].qty.toString(),
-                  style:  const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
+                    total?.jumlah.toString() ?? '',
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
-                ),),
-                const Spacer(),
-                  Text(
-                 products[index].jumlah.toString(),
-                  style:  const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
-                  ),
-                ),
-                ],
-              ),
-              const SizedBox(height: 10,),
-             
-            ],
-          )));
-        }
-      },
-    ),
-     Row(children :[
-      Spacer(),
-              const  Text(
-                 "Total : ",
-                  style:   TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
-                  ),
-                ),
-                  Text(
-                 total?.jumlah.toString() ?? '',
-                  style:  const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4C53A5),
-                  ),
-                ),
                 ]),
-        const   SizedBox(height: 15,),
-             const Spacer(),
-             InkWell(
-              onTap: () {
-                _handleDetil(context);
-               
-              },
-              child:  Container(
-              alignment: Alignment.center,
-              height: 50,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Color(0xFF4C53A5),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                "Check Out",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                const SizedBox(
+                  height: 15,
                 ),
-              ),
+                const Spacer(),
+                InkWell(
+                  onTap: () {
+                    _handleDetil(context);
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 50,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: kSecondaryColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      "Check Out",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                )
+              ],
             ),
-             )
-
-  ],
-),
-)
-);
-    });
+          ));
+        });
   }
+
   void verifyjual() {
     if (nama_lengkap.text.isEmpty) {
       Fluttertoast.showToast(
@@ -423,7 +417,7 @@ Spacer(),
           msg: "Alamat Harus Diisi",
           backgroundColor: Colors.red[300],
           fontSize: 12);
-    }else if (nohp.text.isEmpty) {
+    } else if (nohp.text.isEmpty) {
       Fluttertoast.showToast(
           msg: "Nomor Harus Diisi",
           backgroundColor: Colors.red[300],
@@ -432,191 +426,186 @@ Spacer(),
       _handleJual(context);
     }
   }
+
   late SessionManager _sessionManager;
-Future<void> _handleJual(BuildContext context) async {
-   _sessionManager = SessionManager();
+  Future<void> _handleJual(BuildContext context) async {
+    _sessionManager = SessionManager();
 
     SessionManager.getIdCustomer().then((idCustomer) {
       var idCustomerString = idCustomer?.toString() ?? '';
 
+      try {
+        http.post(Uri.parse(ApiConnect.jual), body: {
+          "total": total?.jumlah.toString(),
+          "total_final": total?.jumlah.toString(),
+          "alamat": alamat.text.toString(),
+          "nohp": nohp.text.toString(),
+          "nama_lengkap": nama_lengkap.text.toString(),
+          "id_customer": idCustomerString,
+          "bukti_bayar": "image/no_money.png",
+        }).then((response) {
+          if (response.statusCode == 200) {
+            final jsonData = jsonDecode(response.body);
+            final jual = AddTransaksi.fromJson(jsonData);
+            if (response.statusCode == 200) {
+              transaksi = jual;
+              pop(context);
+            } else {
+              Fluttertoast.showToast(
+                msg: "Gagal Melakukan Pembelian",
+                backgroundColor: Colors.red,
+                textColor: Colors.white,
+                fontSize: 12,
+              );
+            }
+          } else {
+            Fluttertoast.showToast(
+              msg: "Coba Beberapa Saat Lagi",
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 12,
+            );
+          }
+        });
+      } catch (e) {
+        // Handle error
+        print('Error: $e');
+      }
+    });
+  }
 
-  
+  Future<void> _handleDetil(BuildContext context) async {
     try {
-      
-      http.post(Uri.parse(ApiConnect.jual), body: {
-        "total": total?.jumlah.toString(),
-        "total_final": total?.jumlah.toString(),
-        "alamat": alamat.text.toString(),
-        "nohp": nohp.text.toString(),
-        "nama_lengkap" :nama_lengkap.text.toString(),
-        "id_customer": idCustomerString,
-        "bukti_bayar" :"image/no_money.png",
-      }).then((response) {
+      for (int index = 0; index < listViews.length; index++) {
+        var response = await http.post(Uri.parse(ApiConnect.detiljual), body: {
+          "id_jual": transaksi.idJual.toString(),
+          "id_keranjang": listViews[index].idKeranjang.toString(),
+          "jumlah": total?.jumlah.toString(),
+          "harga": listViews[index].harga.toString(),
+          "qty": listViews[index].qty.toString(),
+          "total_final": total!.jumlah.toString(),
+          "id_barang": listViews[index].idBarang.toString(),
+        });
 
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
-        final jual = AddTransaksi.fromJson(jsonData);
         if (response.statusCode == 200) {
-         transaksi = jual;
-         pop(context);
+          final jsonData = jsonDecode(response.body);
+          final detjuals = AdddetilTransaksi.fromJson(jsonData);
+          if (response.statusCode == 200) {
+            _handlestatus(context);
+            _handlebarang();
+            setState(() {
+              detjual = detjuals;
+            });
+          } else {
+            Fluttertoast.showToast(
+              msg: "Gagal Melakukan Pembelian",
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 12,
+            );
+          }
         } else {
           Fluttertoast.showToast(
-            msg: "Gagal Melakukan Pembelian",
+            msg: "Coba Beberapa Saat Lagi",
             backgroundColor: Colors.red,
             textColor: Colors.white,
             fontSize: 12,
           );
         }
-      } else {
-        Fluttertoast.showToast(
-          msg: "Coba Beberapa Saat Lagi",
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 12,
-        );
       }
-    } );}catch (e) {
+    } catch (e) {
       // Handle error
       print('Error: $e');
     }
-  });}
-Future<void> _handleDetil(BuildContext context) async {
-  
-  try {
-    for (int index = 0; index < listViews.length; index++) {
-      var response = await http.post(Uri.parse(ApiConnect.detiljual), body: {
-        "id_jual": transaksi.idJual.toString(),
-        "id_keranjang": listViews[index].idKeranjang.toString(),
-        "jumlah": total?.jumlah.toString(),
-        "harga": listViews[index].harga.toString(),
-        "qty": listViews[index].qty.toString(),
-         "total_final": total!.jumlah.toString(),
-          "id_barang": listViews[index].idBarang.toString(),
-      });
-
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
-        final detjuals = AdddetilTransaksi.fromJson(jsonData);
-        if (response.statusCode == 200) {
-          _handlestatus(context);
-           _handlebarang();
-          setState(() {
-            detjual = detjuals;
-          });
-        } else {
-          Fluttertoast.showToast(
-            msg: "Gagal Melakukan Pembelian",
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 12,
-          );
-        }
-      } else {
-        Fluttertoast.showToast(
-          msg: "Coba Beberapa Saat Lagi",
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 12,
-        );
-      }
-    }
-  } catch (e) {
-    // Handle error
-    print('Error: $e');
   }
-}
-Future<void> _handlestatus(BuildContext context) async {
-  try {
-    for (int index = 0; index < listViews.length; index++) {
-      var response = await http.post(Uri.parse(ApiConnect.statusjual), body: {
-       
-        "id_keranjang": listViews[index].idKeranjang.toString(),
-      
-      });
 
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
-        final detjuals = UpdateStatusKeranjang.fromJson(jsonData);
+  Future<void> _handlestatus(BuildContext context) async {
+    try {
+      for (int index = 0; index < listViews.length; index++) {
+        var response = await http.post(Uri.parse(ApiConnect.statusjual), body: {
+          "id_keranjang": listViews[index].idKeranjang.toString(),
+        });
+
         if (response.statusCode == 200) {
-           _handlebarang();
-           Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>HomeScreen(),
-              ),
-            );
-          setState(() {
+          final jsonData = jsonDecode(response.body);
+          final detjuals = UpdateStatusKeranjang.fromJson(jsonData);
+          if (response.statusCode == 200) {
+            _handlebarang();
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>FragmentProduk(),
+                builder: (context) => HomeScreen(),
               ),
             );
-           Fluttertoast.showToast(
-            msg: "Ayo Belanja Lagi",
-            backgroundColor: Color(0xFF4C53A5),
-            textColor: Colors.white,
-            fontSize: 12,
-          );
-          });
+            setState(() {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FragmentProduk(),
+                ),
+              );
+              Fluttertoast.showToast(
+                msg: "Ayo Belanja Lagi",
+                backgroundColor: Color(0xFF4C53A5),
+                textColor: Colors.white,
+                fontSize: 12,
+              );
+            });
+          } else {
+            Fluttertoast.showToast(
+              msg: "Gagal Melakukan Pembelian",
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 12,
+            );
+          }
         } else {
           Fluttertoast.showToast(
-            msg: "Gagal Melakukan Pembelian",
+            msg: "Coba Beberapa Saat Lagi",
             backgroundColor: Colors.red,
             textColor: Colors.white,
             fontSize: 12,
           );
         }
-      } else {
-        Fluttertoast.showToast(
-          msg: "Coba Beberapa Saat Lagi",
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 12,
-        );
       }
+    } catch (e) {
+      // Handle error
+      print('Error: $e');
     }
-  } catch (e) {
-    // Handle error
-    print('Error: $e');
   }
-}
 
-Future<void> _handlebarang() async {
-  try {
-    for (int index = 0; index < listViews.length; index++) {
-      var response = await http.post(Uri.parse(ApiConnect.triger), body: {
-        "id_barang": listViews[index].idBarang.toString(),
-        "qty": listViews[index].qty
-      });
+  Future<void> _handlebarang() async {
+    try {
+      for (int index = 0; index < listViews.length; index++) {
+        var response = await http.post(Uri.parse(ApiConnect.triger), body: {
+          "id_barang": listViews[index].idBarang.toString(),
+          "qty": listViews[index].qty
+        });
 
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
-        final detjuals = Triger.fromJson(jsonData);
         if (response.statusCode == 200) {
-          
+          final jsonData = jsonDecode(response.body);
+          final detjuals = Triger.fromJson(jsonData);
+          if (response.statusCode == 200) {
+          } else {
+            Fluttertoast.showToast(
+              msg: "Gagal Melakukan Pembelian",
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 12,
+            );
+          }
         } else {
           Fluttertoast.showToast(
-            msg: "Gagal Melakukan Pembelian",
+            msg: "Coba Beberapa Saat Lagi",
             backgroundColor: Colors.red,
             textColor: Colors.white,
             fontSize: 12,
           );
         }
-      } else {
-        Fluttertoast.showToast(
-          msg: "Coba Beberapa Saat Lagi",
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 12,
-        );
       }
+    } catch (e) {
+      // Handle error
+      print('Error: $e');
     }
-  } catch (e) {
-    // Handle error
-    print('Error: $e');
   }
-}
-
-
 }

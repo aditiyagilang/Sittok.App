@@ -1,8 +1,11 @@
 import 'package:ecommerce_ui/API/Api_Service.dart';
+import 'package:ecommerce_ui/Akun/Akun_body.dart';
+import 'package:ecommerce_ui/Akun/Akun_pic.dart';
 import 'package:ecommerce_ui/Akun/Akun_screen.dart';
 import 'package:ecommerce_ui/models/GetTransaksi_model.dart';
 import 'package:ecommerce_ui/models/model_barang.dart';
 import 'package:ecommerce_ui/models/model_favorit.dart';
+import 'package:ecommerce_ui/models/model_user.dart';
 import 'package:ecommerce_ui/screens/favorite/favorite_screen.dart';
 import 'package:ecommerce_ui/navBar/navBar.dart';
 import 'package:ecommerce_ui/screens/home_screen/components/coba.dart';
@@ -37,7 +40,7 @@ class _HomeScreen extends State<HomeScreen> {
 FragmentBeranda(),
     const FragmentProduk(),
     FavoriteScreens(favorites: [],),
-    const FragmentAkun(),
+FragmentAkun(),
   ];
 
 
@@ -67,11 +70,12 @@ FragmentBeranda(),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_bag, color: Colors.purple),
-            label: 'Produk',
+            label: 'Pesanan',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite, color: Colors.purple),
             label: 'Favorit',
+            
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle, color: Colors.purple),
@@ -406,14 +410,22 @@ class FragmentAkun extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AkunScreen()),
-        );
-      },
-      child: AkunScreen(),
-    );
+    return Scaffold(body: FutureBuilder<Users>(
+        future: ServiceApiProfil().getData(),
+        builder: (BuildContext context, AsyncSnapshot<Users> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (!snapshot.hasData) {
+            return Center(
+              child: Text('No data available.'),
+            );
+          } else {
+            Users data = snapshot.data!;
+            return AkunPic();
+          }
+        },
+      ),);
   }
 }

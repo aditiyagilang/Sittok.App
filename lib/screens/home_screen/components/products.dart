@@ -89,6 +89,7 @@ Future<List<Kategori>> fetchData2() async {
 
 
   }
+
 void updateList(String value) {
   setState(() {
     if (value.isEmpty) {
@@ -175,7 +176,7 @@ void updateList(String value) {
             Text(
               product.deskripsi.toString(),
               overflow: TextOverflow.ellipsis,
-              maxLines: 6,
+              maxLines: 2,
               style: TextStyle(
                 fontSize: 9,
                 color: kSecondaryColor.withOpacity(0.9),
@@ -189,7 +190,7 @@ void updateList(String value) {
   Widget image(Productse product) {
     if (product.gambar != null) {
       String imageUrl =
-          "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar.toString();
+          "https://8abd-202-154-18-72.ngrok-free.app/" + product.gambar.toString();
       return Container(
         height: 128,
         width: 128,
@@ -211,7 +212,7 @@ void updateList(String value) {
             image: DecorationImage(
                 fit: BoxFit.cover,
                 image: NetworkImage(
-                  "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar.toString(),
+                  "https://8abd-202-154-18-72.ngrok-free.app/" + product.gambar.toString(),
                 ))),
         child: text(product),
       );
@@ -297,7 +298,7 @@ Widget favoriteIcon(int index) {
 
 Widget productItem(BuildContext context, Productse product, int index) {
   String imageUrl =
-      "https://fd01-202-154-18-72.ngrok-free.app/" + product.gambar.toString();
+      "https://8abd-202-154-18-72.ngrok-free.app/" + product.gambar.toString();
   return Stack(
     children: [
   
@@ -327,14 +328,14 @@ Widget productItem(BuildContext context, Productse product, int index) {
     
       Align(
         alignment: Alignment.bottomCenter,
-        child: Padding (padding: EdgeInsets.only(top: 77), child :
+        child: Padding (padding: EdgeInsets.only(top: 93), child :
         
         ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: SizedBox(
             
             width: 148,
-            height: 48,
+            height: 32,
             child: ElevatedButton(
               onPressed: () {
                 _handleAdddatakeranjang(context, index);
@@ -427,7 +428,7 @@ FutureBuilder<List<Productse>>(
             return Column(children :[
             
             productItem(context, listViews[index], index),
-            const SizedBox(height: 10,),
+            const SizedBox(height: 2,),
             text(listViews[index])]);
           },
         );

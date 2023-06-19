@@ -16,6 +16,7 @@ class AkunBody extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 20),
       child: Column(
         children: [
+          SizedBox(height: 20),
           AkunPic(),
           SizedBox(height: 20),
           AkunMenu(
